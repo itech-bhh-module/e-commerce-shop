@@ -1,16 +1,50 @@
-# e-commerce-shop
+# ☕ Second-Hand Coffee Equipment Marketplace (Nicht die Bohne)
 
-### domane
-- second barista items
+An online marketplace built exclusively for buying and selling second-hand coffee equipment, aiming to be the "Vinted" for coffee enthusiasts.
 
-### tech stack
-- pq database
-  - runs in docker
-- spring boot backend
-- react frontend (incl. tailwind css)
+---
 
-### responsibilities
-- emilio database setup
-- max database
-- luc & emilio spring boot
-- johan frontend
+## ✨ Features (Planned)
+
+* **User Authentication:** Secure sign-up, log-in, and profile management.
+* **Product Listings:** Users can easily list equipment with detailed descriptions and images.
+* **Search & Filtering:** Robust searching based on equipment type (e.g., espresso machine, grinder, brewer), brand, condition, and price.
+* **Messaging System:** Direct communication between buyers and sellers.
+* **Payment Integration:** Secure transaction processing.
+
+---
+
+## 🛠️ Tech Stack
+
+This project is planned to be a modern, full-stack application leveraging the following technologies:
+
+### 🌐 Frontend
+* **React:** The main JavaScript library for building the user interface.
+* **Vite:** Used as the build tool for a fast and efficient development experience.
+
+### ⚙️ Backend
+* **Spring Boot:** The robust Java framework providing the RESTful API and application logic.
+
+### 🗄️ Database
+* **PostgreSQL:** A powerful, open-source object-relational database system for reliable data storage.
+
+---
+
+## 🚀 Getting Started
+
+We are currently in the **planning and architecture phase**. Detailed setup and contribution guides will be added here once development begins.
+
+---
+
+## 🤝 Contributing
+
+- Emilio alias Cortado
+  - set up dbms running in docker
+  - learning and supporting with spring boot
+- Johan alias Filterkaffee
+  - frontend dev
+- Max alias Lungo
+  - dba
+- Luc alias Flat White
+  - backend dev
+---
