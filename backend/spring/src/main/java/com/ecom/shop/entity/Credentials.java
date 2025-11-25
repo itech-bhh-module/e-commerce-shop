@@ -2,9 +2,7 @@ package com.ecom.shop.entity;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Timestamp;
 
@@ -17,17 +15,17 @@ public class Credentials {
     @Column
     @Id
     @GeneratedValue (strategy = GenerationType.AUTO)
-    int credentialId;
+    private int credentialId;
 
     @Column(name = "account_id")
-    int accountId;
+    private int accountId;
 
     @Column
-    String username;
+    private String username;
 
     @Column
-    String password;
+    private String password;
 
     @Column(name = "last_login")
-    Timestamp lastLogin;
+    private Timestamp lastLogin;
 }

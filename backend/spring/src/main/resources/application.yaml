@@ -2,12 +2,12 @@ spring:
   application:
     name: nicht-die-bohne
   datasource:
-    url: jdbc:h2:mem:mydb
-    username: admin
-    password: admin123
-    driver-class-name: org.h2.Driver
+    url: jdbc:postgresql://localhost:8000/KeineBohne?currentSchema=nichtdiebohne
+    username: adminbohne
+    password: nichtdiebohne
+    driver-class-name: org.postgresql.Driver
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 server:
   port: 8080

@@ -1,9 +1,7 @@
 package com.ecom.shop.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @NoArgsConstructor
@@ -14,20 +12,20 @@ public class ProductImage {
     @Column(name = "image_id")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    int imageId;
+    private int imageId;
 
     @Column(name = "product_id")
-    int productId;
+    private int productId;
 
     @Column(name = "image_url")
-    String imageUrl;
+    private String imageUrl;
 
     @Column
-    String text;
+    private String text;
 
     @Column(name = "sort_order")
-    String sortOrder; //?
+    private String sortOrder; //?
 
     @Column(name = "is_main")
-    Boolean isMain;
+    private Boolean isMain;
 }

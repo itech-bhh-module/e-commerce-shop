@@ -1,9 +1,7 @@
 package com.ecom.shop.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
@@ -16,17 +14,17 @@ public class Order {
     @Column(name = "order_id")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    int orderId;
+    private int orderId;
 
     @Column(name = "payment_method")
-    String paymentMethod;
+    private String paymentMethod;
 
     @Column(name = "order_price")
-    int orderPrice;
+    private int orderPrice;
 
     @Column
-    Date date;
+    private Date date;
 
     @Column
-    String status;
+    private String status;
 }

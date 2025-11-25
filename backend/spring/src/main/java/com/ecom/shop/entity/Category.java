@@ -1,9 +1,7 @@
 package com.ecom.shop.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @NoArgsConstructor
@@ -14,11 +12,11 @@ public class Category {
     @Column(name = "category_id")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    int categoryId;
+    private int categoryId;
 
     @Column
-    String name;
+    private String name;
 
     @Column
-    String description;
+    private String description;
 }

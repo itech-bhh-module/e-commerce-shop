@@ -2,9 +2,7 @@ package com.ecom.shop.entity;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
@@ -14,22 +12,25 @@ import java.util.Date;
 @Data
 @Table(name="account")
 public class Account {
-    @Column
+    @Column(name = "account_id")
     @Id
     @GeneratedValue (strategy = GenerationType.AUTO)
-    int accountId;
+    private int accountId;
 
     @Column(name="address_id")
-    String addressId;
+    private String addressId;
 
     @Column
-    String name;
+    private String name;
 
     @Column
-    String email;
+    private String email;
 
     @Column
-    Date birthday;
+    private Date birthday;
+
+    @Column(name = "is_guest")
+    private Boolean isGuest;
 
 
 }

@@ -1,9 +1,7 @@
 package com.ecom.shop.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @NoArgsConstructor
@@ -14,14 +12,14 @@ public class ProductOffer {
     @Column(name = "prod_off_id")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    int prodOffId;
+    private int prodOffId;
 
     @Column(name = "offer_id")
-    int offerId;
+    private int offerId;
 
     @Column(name = "product_id")
-    int productId;
+    private int productId;
 
     @Column
-    int quantity;
+    private int quantity;
 }

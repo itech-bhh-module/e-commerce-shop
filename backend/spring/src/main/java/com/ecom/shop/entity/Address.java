@@ -1,9 +1,7 @@
 package com.ecom.shop.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @NoArgsConstructor
@@ -14,14 +12,14 @@ public class Address {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     @Column
-    int addressId;
+    private int addressId;
 
     @Column
-    String street;
+    private String street;
 
     @Column
-    String postcode;
+    private String postcode;
 
     @Column
-    String province;
+    private String province;
 }
