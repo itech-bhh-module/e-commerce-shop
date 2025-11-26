@@ -1,10 +1,8 @@
-// src/components/Navbar.jsx
-import { useState } from 'react'; // 1. Importieren
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import LoginModal from './LoginModal'; // 2. Importieren
+import LoginModal from './LoginModal';
 
 export default function Navbar() {
-  // 3. State anlegen: Am Anfang ist es zu (false)
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   return (
