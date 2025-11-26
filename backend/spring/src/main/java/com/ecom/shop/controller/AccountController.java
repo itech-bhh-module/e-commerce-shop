@@ -1,6 +1,7 @@
 package com.ecom.shop.controller;
 
 import com.ecom.shop.dto.AccountCreationDto;
+import com.ecom.shop.dto.CredentialsDto;
 import com.ecom.shop.entity.Account;
 import com.ecom.shop.service.AccountService;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +27,11 @@ public class AccountController {
     public AccountCreationDto createAccount(@RequestBody AccountCreationDto accountDto){
         logger.info("user creation was called using the following rq body:\n" + accountDto.toString());
         return accountDto;
+    }
+
+    @PostMapping("/validateLogin")
+    public Boolean validateLogin(@RequestBody CredentialsDto credentialsDto){
+        logger.info("user wants to log in" + credentialsDto.toString());
+        return false; //default test value because db is not properly connected yet
     }
 }

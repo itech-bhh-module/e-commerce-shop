@@ -36,7 +36,6 @@ public class DtoMapperService {
     public CredentialsDto toCredentialsDto(Credentials c) {
         if (c == null) return null;
         return new CredentialsDto(
-                c.getAccountId(),
                 c.getUsername(),
                 c.getPassword(),
                 c.getLastLogin()
