@@ -31,6 +31,4 @@ public class Account {
 
     @Column(name = "is_guest")
     private Boolean isGuest;
-
-
 }
