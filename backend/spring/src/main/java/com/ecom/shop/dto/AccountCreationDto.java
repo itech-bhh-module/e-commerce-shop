@@ -16,6 +16,9 @@ public class AccountCreationDto {
     String lastname;
     String firstname;
     String email;
+    String username;
+    String password;
+    String gender;
     Date birthday;
 
     @Override
@@ -27,6 +30,9 @@ public class AccountCreationDto {
                 ", lastname='" + lastname + '\'' +
                 ", firstname='" + firstname + '\'' +
                 ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + (password != null ? "[PROTECTED]" : "null") + '\'' +
+                ", gender='" + gender + '\'' +
                 ", birthday=" + (birthday != null ? birthday.toString() : "null") +
                 '}';
     }

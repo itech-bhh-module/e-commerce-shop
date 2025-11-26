@@ -20,8 +20,11 @@ public class Account {
     @Column(name="address_id")
     private String addressId;
 
-    @Column
-    private String name;
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "first_name")
+    private String firstName;
 
     @Column
     private String email;
@@ -31,4 +34,7 @@ public class Account {
 
     @Column(name = "is_guest")
     private Boolean isGuest;
+
+    @Column
+    private String gender;
 }

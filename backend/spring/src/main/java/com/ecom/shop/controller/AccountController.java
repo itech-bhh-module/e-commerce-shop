@@ -10,6 +10,7 @@ import org.jboss.logging.Logger;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.sql.Date;
 
 @RestController
 @RequestMapping("/account")
@@ -26,6 +27,18 @@ public class AccountController {
     @PostMapping("/createAccount")
     public AccountCreationDto createAccount(@RequestBody AccountCreationDto accountDto){
         logger.info("user creation was called using the following rq body:\n" + accountDto.toString());
+
+        accountService.createAccount(accountDto.getStreet(),
+                                    accountDto.getPostcode(),
+                                    accountDto.getProvince(),
+                                    accountDto.getFirstname(),
+                                    accountDto.getLastname(),
+                                    accountDto.getEmail(),
+                                    new Date(accountDto.getBirthday().getDate()),
+                                    accountDto.getUsername(),
+                                    accountDto.getPassword(),
+                                    false
+        );
         return accountDto;
     }
 

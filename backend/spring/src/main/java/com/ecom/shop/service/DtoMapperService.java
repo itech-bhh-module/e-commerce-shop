@@ -10,10 +10,12 @@ public class DtoMapperService {
     public AccountDto toAccountDto(Account a) {
         if (a == null) return null;
         return new AccountDto(
-                a.getAddressId(),
-                a.getName(),
+                a.getFirstName(),
+                a.getLastName(),
                 a.getEmail(),
-                a.getBirthday()
+                a.getBirthday(),
+                a.getGender(),
+                a.getIsGuest()
         );
     }
 
