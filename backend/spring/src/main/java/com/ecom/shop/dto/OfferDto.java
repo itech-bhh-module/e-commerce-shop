@@ -11,5 +11,6 @@ public class OfferDto {
     int offerPrice;
     int offerAmount;
     String offerTitle;
+    String status;
 }
 

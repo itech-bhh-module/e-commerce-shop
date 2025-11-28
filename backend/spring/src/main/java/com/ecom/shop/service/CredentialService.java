@@ -6,15 +6,14 @@ import com.ecom.shop.repository.CredentialRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class CredentialService {
     private final CredentialRepo credentialRepo;
-    private final DtoMapperService dtoMapperService;
+    private final CredentialsMapperService credentialsMapperService;
 
     public CredentialsDto findByUsername(String username){
-        return dtoMapperService.toCredentialsDto(credentialRepo.findByUsername(username));
+        Credentials creds = credentialRepo.findByUsername(username);
+        return credentialsMapperService.toCredentialsDto(creds);
     }
 }

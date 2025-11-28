@@ -20,7 +20,7 @@ public class ProductImage {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column
+    @Column(name = "alt_text")
     private String text;
 
     @Column(name = "sort_order")
