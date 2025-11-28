@@ -9,8 +9,10 @@ import java.util.List;
 
 @Repository
 public interface ProductRepo extends JpaRepository<Product, Integer> {
-    @Query(value = "select p " +
+    @Query("select p " +
             "from Product p " +
-            "where p.status= 'Aktiv'")
+            "join ProductOffer po on po.productId = p.productId " +
+            "join Offer o on po.offerId = o.offerId " +
+            "where o.status = 'Aktiv'")
     List<Product> getAllAvailableProducts();
 }

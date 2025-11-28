@@ -35,6 +35,4 @@ public class Product {
     @Column
     private String title;
 
-    @Column
-    private String status;
 }

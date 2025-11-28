@@ -20,7 +20,6 @@ public class ProductMapperService {
                 p.getAmount(),
                 p.getCondition(),
                 p.getTitle(),
-                p.getStatus(),
                 productImagesService.getImagesById(p.getProductId())
         );
     }

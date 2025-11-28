@@ -29,4 +29,7 @@ public class Offer {
     @Column(name = "offer_title")
     private String offerTitle;
 
+    @Column
+    private String status;
+
 }

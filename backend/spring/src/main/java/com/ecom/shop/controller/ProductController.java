@@ -1,7 +1,6 @@
 package com.ecom.shop.controller;
 
 import com.ecom.shop.dto.ProductDto;
-import com.ecom.shop.entity.Product;
 import com.ecom.shop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

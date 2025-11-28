@@ -13,7 +13,8 @@ public class OfferMapperService {
         return new OfferDto(
                 o.getOfferPrice(),
                 o.getOfferAmount(),
-                o.getOfferTitle()
+                o.getOfferTitle(),
+                o.getStatus()
         );
     }
 }

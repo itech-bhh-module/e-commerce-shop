@@ -1,7 +1,6 @@
 package com.ecom.shop.service;
 
 import com.ecom.shop.dto.ProductImageDto;
-import com.ecom.shop.entity.ProductImage;
 import com.ecom.shop.repository.ProductImagesRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

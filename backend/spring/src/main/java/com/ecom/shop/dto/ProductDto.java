@@ -15,7 +15,6 @@ public class ProductDto {
     int amount;
     String condition;
     String title;
-    String status;
     List<ProductImageDto> images;
 }
 
