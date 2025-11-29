@@ -17,7 +17,7 @@ public class Offer {
     @Column(name = "product_id") //brauchen wir hier nicht eigentlich die product_offer id?
     private int productId;
 
-    @Column(name = "account_id")
+    @Column(name = "account_seller_id")
     private int accountId;
 
     @Column(name = "offer_price")
