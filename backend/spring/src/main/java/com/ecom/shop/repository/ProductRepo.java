@@ -1,7 +1,9 @@
 package com.ecom.shop.repository;
 
+import com.ecom.shop.dto.ProductFilterDto;
 import com.ecom.shop.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -9,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProductRepo extends JpaRepository<Product, Integer> {
+public interface ProductRepo extends JpaRepository<Product, Integer>, JpaSpecificationExecutor<Product> {
     @Query("select p " +
             "from Product p " +
             "join ProductOffer po on po.productId = p.productId " +
@@ -25,4 +27,5 @@ public interface ProductRepo extends JpaRepository<Product, Integer> {
             "where o.status = 'Aktiv' " +
             "and c.username = :username")
     List<Product> getAllByUsername(@Param("username")String username);
+
 }

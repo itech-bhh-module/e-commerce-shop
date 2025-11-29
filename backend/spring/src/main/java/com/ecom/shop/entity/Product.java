@@ -13,9 +13,10 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int productId;
-
+    /*
     @Column(name = "category_id")
     private int categoryId;
+     */
 
     @Column(name = "account_id")
     private int accountId;
@@ -34,5 +35,7 @@ public class Product {
 
     @Column
     private String title;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 }

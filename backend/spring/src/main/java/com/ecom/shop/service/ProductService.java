@@ -1,7 +1,9 @@
 package com.ecom.shop.service;
 
 import com.ecom.shop.dto.ProductDto;
+import com.ecom.shop.dto.ProductFilterDto;
 import com.ecom.shop.repository.ProductRepo;
+import com.ecom.shop.specification.ProductSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,5 +27,12 @@ public class ProductService {
                             .stream().map(productMapperService::toProductDto)
                             .collect(Collectors.toList());
     }
+
+    public List<ProductDto> getProductsByFilter(ProductFilterDto filter){
+        return productRepo.findAll(ProductSpecification.filterProducts(filter))
+                .stream().map(productMapperService::toProductDto)
+                .collect(Collectors.toList());
+    }
+
 
 }

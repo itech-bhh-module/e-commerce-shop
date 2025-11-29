@@ -1,12 +1,10 @@
 package com.ecom.shop.controller;
 
 import com.ecom.shop.dto.ProductDto;
+import com.ecom.shop.dto.ProductFilterDto;
 import com.ecom.shop.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,5 +22,10 @@ public class ProductController {
     @GetMapping("/getAvailableProducts/{username}")
     public List<ProductDto>getAllProductByUsername(@PathVariable String username){
         return productService.getAllAvailableOffersByUsername(username);
+    }
+
+    @GetMapping("/getAvailableProductsByFilter")
+    public List<ProductDto> getProductsByFilter(@RequestBody ProductFilterDto filter){
+        return productService.getProductsByFilter(filter);
     }
 }
