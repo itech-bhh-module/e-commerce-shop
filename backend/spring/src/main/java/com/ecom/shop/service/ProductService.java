@@ -20,4 +20,10 @@ public class ProductService {
                             .collect(Collectors.toList());
     }
 
+    public List<ProductDto> getAllAvailableOffersByUsername(String username){
+        return productRepo.getAllByUsername(username)
+                            .stream().map(productMapperService::toProductDto)
+                            .collect(Collectors.toList());
+    }
+
 }
