@@ -14,13 +14,13 @@ const getHeaders = () => {
   return headers;
 };
 
-
 export const loginUser = async (username, password) => {
   const credentials = btoa(`${username}:${password}`);
   const authHeaderValue = `Basic ${credentials}`;
 
   try {
-    const response = await fetch(`${API_BASE_URL}/shop/products`, { 
+    // Hier nutzen wir den korrekten Endpunkt zum Testen des Logins
+    const response = await fetch(`${API_BASE_URL}/offer/getAvailableProducts`, { 
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -61,7 +61,7 @@ export const registerUser = async (userData) => {
     birthday: userData.birthDate
   };
 
-  const response = await fetch(`${API_BASE_URL}/shop/account/createAccount?continue`, {
+  const response = await fetch(`${API_BASE_URL}/shop/account/createAccount`, {
     method: "POST", 
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(backendPayload),
@@ -73,11 +73,15 @@ export const registerUser = async (userData) => {
   }
 
   const text = await response.text();
-  return text ? JSON.parse(text) : { success: true };
+  return text ? (text.startsWith('{') ? JSON.parse(text) : { success: true }) : { success: true };
 };
 
+// --- HIER WAR DER FEHLER ---
 export const fetchProducts = async () => {
-  const response = await fetch(`${API_BASE_URL}/shop/products`, {
+  // ALT (FALSCH): const response = await fetch(`${API_BASE_URL}/shop/products`, ...
+  
+  // NEU (RICHTIG): Muss exakt so heißen wie im ProductController!
+  const response = await fetch(`${API_BASE_URL}/shop/offer/getAvailableProducts`, {
     method: "GET",
     headers: getHeaders()
   });
