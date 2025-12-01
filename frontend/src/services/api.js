@@ -60,7 +60,7 @@ export const registerUser = async (userData) => {
     birthday: userData.birthDate
   };
 
-  const response = await fetch(`${API_BASE_URL}/shop/account/createAccount`, {
+  const response = await fetch(`${API_BASE_URL}/shop/account/createAccount?continue`, {
     method: "POST", 
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(backendPayload),
