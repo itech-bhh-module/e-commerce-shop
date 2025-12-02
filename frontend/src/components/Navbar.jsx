@@ -5,11 +5,8 @@ import { logoutUser } from '../services/api';
 
 export default function Navbar() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  
   const [username, setUsername] = useState(null);
-  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,6 +39,10 @@ export default function Navbar() {
 
           <div className="flex gap-4 items-center">
             
+            <button className="bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2 active:scale-95">
+                Verkaufen
+            </button>
+
             {username ? (
               <div className="relative">
                 <button 
@@ -87,9 +88,6 @@ export default function Navbar() {
               </button>
             )}
             
-            <button className="bg-stone-900 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-orange-600 transition-colors">
-                Verkaufen
-            </button>
           </div>
         </div>
       </nav>
