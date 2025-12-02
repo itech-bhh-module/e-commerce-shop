@@ -1,6 +1,6 @@
-// src/pages/AccountPage.jsx
 import React, { useState, useEffect } from 'react';
-import { fetchAccountData } from '../services/api';
+import { fetchAccountPageData } from '../services/api';
+import ProductCard from '../components/ProductCard';
 
 export default function AccountPage() {
   const [userData, setUserData] = useState({
@@ -12,29 +12,48 @@ export default function AccountPage() {
     postcode: '',
     city: ''
   });
-  
+
+  const [myOffers, setMyOffers] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  
+  const [debugData, setDebugData] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        // HIER IST DIE ÄNDERUNG:
-        // Wir brauchen keine ID mehr übergeben, die Funktion holt sich den Username selbst.
-        const data = await fetchAccountData();
+        const storedUsername = localStorage.getItem("username");
+
+        if (!storedUsername) {
+          throw new Error("Nicht eingeloggt (Kein Username gefunden).");
+        }
+
+        const dto = await fetchAccountPageData(storedUsername);
         
+        console.log("🔥 VOM BACKEND EMPFANGEN:", dto);
+        setDebugData(dto); 
+
+        const acc = dto.accountData || {}; 
+        const addr = acc.addressDto || {}; 
+
         setUserData({
-          firstname: data.firstName || '',
-          lastname: data.lastName || '',
-          email: data.email || '',
-          birthday: data.birthday ? data.birthday.split('T')[0] : '',
-          // Adresse nur mappen, wenn sie im JSON enthalten ist
-          street: data.address ? data.address.strasse_mit_hausnr : '',
-          postcode: data.address ? data.address.plz : '',
-          city: data.address ? data.address.ort : ''
+          firstname: acc.firstName || '',
+          lastname: acc.lastName || '',
+          email: acc.email || '',
+          birthday: acc.birthday ? acc.birthday.toString().split('T')[0] : '',
+          street: addr.street || '',
+          postcode: addr.postcode || '',
+          city: addr.province || '' 
         });
+
+        if (dto.products && Array.isArray(dto.products)) {
+            setMyOffers(dto.products);
+        }
+
       } catch (err) {
-        console.error(err);
+        console.error("Fehler:", err);
         setError(err.message);
       } finally {
         setIsLoading(false);
@@ -44,66 +63,69 @@ export default function AccountPage() {
     loadData();
   }, []);
 
-  // ... (Restlicher Render Code bleibt gleich) ...
-
   const handleChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
   const handleSave = (e) => {
     e.preventDefault();
-    // Hier später: Update-Funktion im Backend aufrufen
-    alert("Speichern simulieren: Daten an Backend gesendet!");
+    alert("Speichern an Backend gesendet!");
     setIsEditing(false);
   };
 
-  if (isLoading) return <div className="text-center p-10">Lade Profildaten...</div>;
-  if (error) return <div className="text-center p-10 text-red-600">{error}</div>;
+  if (isLoading) return <div className="p-10 text-center font-bold text-stone-500">Lade Profil...</div>;
+  
+  if (error) return (
+    <div className="p-10 text-center">
+      <h2 className="text-red-600 font-bold mb-2">Fehler beim Laden</h2>
+      <p className="text-stone-600">{error}</p>
+      <a href="/" className="underline mt-4 block text-stone-900 hover:text-orange-600">Zurück zur Startseite</a>
+    </div>
+  );
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12">
+    <div className="max-w-5xl mx-auto px-6 py-12">
       
-      {/* Header Bereich */}
       <div className="flex justify-between items-end mb-8">
         <div>
           <h1 className="text-3xl font-black text-stone-900">Mein Profil</h1>
           <p className="text-stone-500 mt-2">Verwalte deine persönlichen Daten und Adressen.</p>
         </div>
         
-        {/* Bearbeiten Button Toggle */}
         {!isEditing && (
             <button 
                 onClick={() => setIsEditing(true)}
-                className="text-orange-600 font-bold hover:bg-orange-50 px-4 py-2 rounded-lg transition-colors"
+                className="bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2 active:scale-95"
             >
-                ✎ Bearbeiten
+                <span>✎</span> Daten bearbeiten
             </button>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
         
-        {/* Linke Spalte: Avatar Card */}
         <div className="md:col-span-1">
-            <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm text-center">
+            <form onSubmit={handleSave} className="bg-white p-8 rounded-2xl border border-stone-200 text-center shadow-sm space-y-6">
                 <div className="w-24 h-24 bg-stone-900 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4">
-                    {userData.firstname.charAt(0)}{userData.lastname.charAt(0)}
+                    {userData.firstname && userData.firstname.charAt(0)}
+                    {userData.lastname && userData.lastname.charAt(0)}
                 </div>
-                <h2 className="font-bold text-xl">{userData.firstname} {userData.lastname}</h2>
-                <p className="text-stone-500 text-sm">{userData.email}</p>
-                <div className="mt-4 pt-4 border-t border-stone-100">
+                <h2 className="font-bold text-xl">
+                  {userData.firstname ? `${userData.firstname} ${userData.lastname}` : 'Unbekannter Nutzer'}
+                </h2>
+                <p className="text-stone-500 text-sm mb-4">{userData.email || 'Keine E-Mail'}</p>
+                <div className="pt-4 border-t border-stone-100">
                     <span className="inline-block bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">
-                        Verifizierter Käufer
+                        Verifizierter Verkäufer
                     </span>
                 </div>
-            </div>
+            </form>
         </div>
 
-        {/* Rechte Spalte: Formular */}
         <div className="md:col-span-2">
             <form onSubmit={handleSave} className="bg-white p-8 rounded-2xl border border-stone-200 shadow-sm space-y-6">
                 
-                <h3 className="font-bold text-lg border-b border-stone-100 pb-2 mb-4">Persönliche Daten</h3>
+                <h3 className="font-bold text-lg border-b border-stone-100 pb-2 mb-4 text-stone-800">Persönliche Daten</h3>
                 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -114,7 +136,7 @@ export default function AccountPage() {
                             value={userData.firstname}
                             onChange={handleChange}
                             disabled={!isEditing}
-                            className={`w-full border rounded-lg px-4 py-2 transition-all ${isEditing ? 'bg-white border-stone-300 focus:ring-2 focus:ring-orange-500' : 'bg-stone-50 border-stone-200 text-stone-500 cursor-not-allowed'}`}
+                            className={`w-full border rounded-lg px-4 py-2 transition-all outline-none ${isEditing ? 'bg-white border-stone-300 focus:ring-2 focus:ring-orange-500' : 'bg-stone-50 border-stone-200 text-stone-500 cursor-not-allowed'}`}
                         />
                     </div>
                     <div>
@@ -125,7 +147,7 @@ export default function AccountPage() {
                             value={userData.lastname}
                             onChange={handleChange}
                             disabled={!isEditing}
-                            className={`w-full border rounded-lg px-4 py-2 transition-all ${isEditing ? 'bg-white border-stone-300 focus:ring-2 focus:ring-orange-500' : 'bg-stone-50 border-stone-200 text-stone-500 cursor-not-allowed'}`}
+                            className={`w-full border rounded-lg px-4 py-2 transition-all outline-none ${isEditing ? 'bg-white border-stone-300 focus:ring-2 focus:ring-orange-500' : 'bg-stone-50 border-stone-200 text-stone-500 cursor-not-allowed'}`}
                         />
                     </div>
                 </div>
@@ -137,12 +159,12 @@ export default function AccountPage() {
                         name="email"
                         value={userData.email}
                         onChange={handleChange}
-                        disabled={!isEditing} // E-Mail oft nicht änderbar machen
-                        className="w-full bg-stone-50 border border-stone-200 text-stone-500 rounded-lg px-4 py-2 cursor-not-allowed"
+                        disabled={true}
+                        className="w-full bg-stone-50 border border-stone-200 text-stone-500 rounded-lg px-4 py-2 cursor-not-allowed outline-none"
                     />
                 </div>
 
-                <h3 className="font-bold text-lg border-b border-stone-100 pb-2 mb-4 pt-4">Anschrift</h3>
+                <h3 className="font-bold text-lg border-b border-stone-100 pb-2 mb-4 pt-4 text-stone-800">Anschrift</h3>
 
                 <div>
                     <label className="block text-sm font-bold text-stone-700 mb-1">Straße & Hausnummer</label>
@@ -152,7 +174,8 @@ export default function AccountPage() {
                         value={userData.street}
                         onChange={handleChange}
                         disabled={!isEditing}
-                        className={`w-full border rounded-lg px-4 py-2 transition-all ${isEditing ? 'bg-white border-stone-300 focus:ring-2 focus:ring-orange-500' : 'bg-stone-50 border-stone-200 text-stone-500 cursor-not-allowed'}`}
+                        placeholder={isEditing ? "Musterstraße 1" : ""}
+                        className={`w-full border rounded-lg px-4 py-2 transition-all outline-none ${isEditing ? 'bg-white border-stone-300 focus:ring-2 focus:ring-orange-500' : 'bg-stone-50 border-stone-200 text-stone-500 cursor-not-allowed'}`}
                     />
                 </div>
 
@@ -165,7 +188,7 @@ export default function AccountPage() {
                             value={userData.postcode}
                             onChange={handleChange}
                             disabled={!isEditing}
-                            className={`w-full border rounded-lg px-4 py-2 transition-all ${isEditing ? 'bg-white border-stone-300 focus:ring-2 focus:ring-orange-500' : 'bg-stone-50 border-stone-200 text-stone-500 cursor-not-allowed'}`}
+                            className={`w-full border rounded-lg px-4 py-2 transition-all outline-none ${isEditing ? 'bg-white border-stone-300 focus:ring-2 focus:ring-orange-500' : 'bg-stone-50 border-stone-200 text-stone-500 cursor-not-allowed'}`}
                         />
                     </div>
                     <div className="col-span-2">
@@ -176,12 +199,11 @@ export default function AccountPage() {
                             value={userData.city}
                             onChange={handleChange}
                             disabled={!isEditing}
-                            className={`w-full border rounded-lg px-4 py-2 transition-all ${isEditing ? 'bg-white border-stone-300 focus:ring-2 focus:ring-orange-500' : 'bg-stone-50 border-stone-200 text-stone-500 cursor-not-allowed'}`}
+                            className={`w-full border rounded-lg px-4 py-2 transition-all outline-none ${isEditing ? 'bg-white border-stone-300 focus:ring-2 focus:ring-orange-500' : 'bg-stone-50 border-stone-200 text-stone-500 cursor-not-allowed'}`}
                         />
                     </div>
                 </div>
 
-                {/* Speicher Buttons nur zeigen wenn isEditing true ist */}
                 {isEditing && (
                     <div className="flex gap-4 pt-6 animate-in fade-in slide-in-from-top-2">
                         <button 
@@ -199,10 +221,37 @@ export default function AccountPage() {
                         </button>
                     </div>
                 )}
-
             </form>
         </div>
       </div>
+
+      <div className="mt-12 border-t border-stone-200 pt-10">
+        <h2 className="text-2xl font-black text-stone-900 mb-6">
+          Meine aktiven Angebote ({myOffers.length})
+        </h2>
+
+        {myOffers.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {myOffers.map((product) => (
+              <ProductCard 
+                key={product.offerId || product.title} 
+                title={product.title}
+                price={(product.price / 100).toFixed(2)}
+                category={product.condition}
+                imageUrl={product.images && product.images.length > 0 ? product.images[0].imageUrl : null}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-stone-50 rounded-2xl border border-stone-200 border-dashed">
+            <p className="text-stone-500 font-medium mb-4">Du hast noch keine Artikel eingestellt.</p>
+            <button className="bg-stone-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-orange-600 transition-colors shadow-lg">
+              Jetzt Artikel verkaufen
+            </button>
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }
