@@ -4,16 +4,12 @@ const getHeaders = () => {
   const headers = {
     "Content-Type": "application/json",
   };
-
-  const storedAuth = localStorage.getItem("auth_header");
   
-  if (storedAuth) {
-    headers["Authorization"] = storedAuth;
-  }
   
   return headers;
 };
 
+// OGIN
 export const loginUser = async (username, password) => {
   try {
     const response = await fetch(`${API_BASE_URL}/shop/account/validateLogin`, { 
@@ -31,14 +27,22 @@ export const loginUser = async (username, password) => {
       throw new Error("Serverfehler beim Login-Versuch.");
     }
 
-    const isValid = await response.json(); 
+    const data = await response.json(); 
+    
+    const isLoginSuccessful = data === true || (data && typeof data === 'object');
 
-    if (isValid === true) {
+    if (isLoginSuccessful) {
       const credentials = btoa(`${username}:${password}`);
       const authHeaderValue = `Basic ${credentials}`;
       
       localStorage.setItem("auth_header", authHeaderValue);
       localStorage.setItem("username", username);
+      
+      if (data.userId) {
+        localStorage.setItem("userId", data.userId);
+      } else {
+        console.warn("Backend lieferte keine User-ID. Account-Page wird eingeschränkt sein.");
+      }
       
       return true;
     } else {
@@ -50,14 +54,17 @@ export const loginUser = async (username, password) => {
     throw error;
   }
 };
+
+//  LOGOUT
 export const logoutUser = () => {
   localStorage.removeItem("auth_header");
-  
   localStorage.removeItem("username"); 
+  localStorage.removeItem("userId"); 
   
   window.location.href = "/";
 };
 
+// REGISTRIERUNG
 export const registerUser = async (userData) => {
   const backendPayload = {
     street: userData.street,
@@ -91,14 +98,31 @@ export const fetchProducts = async () => {
 
   const response = await fetch(`${API_BASE_URL}/shop/offer/getAvailableProducts`, {
     method: "GET",
+    headers: {
+        "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error("Konnte Produkte nicht laden.");
+  }
+
+  return await response.json();
+};
+
+
+export const fetchAccountPageData = async (username) => {
+  if (!username) {
+    throw new Error("Kein Benutzername vorhanden.");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/shop/account/getAccountPageData/${username}`, {
+    method: "GET",
     headers: getHeaders()
   });
 
   if (!response.ok) {
-    if (response.status === 401) {
-      logoutUser();
-    }
-    throw new Error("Konnte Produkte nicht laden.");
+    throw new Error("Konnte Account-Daten nicht laden.");
   }
 
   return await response.json();
