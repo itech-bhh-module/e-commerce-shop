@@ -59,5 +59,8 @@ public class AccountController {
     public AccountPageDto getAccountPageData(@PathVariable String username){
         return accountService.getAccountPageData(username);
     }
+    /*
+    @PostMapping("/updateUserData/{username}")
 
+     */
 }
