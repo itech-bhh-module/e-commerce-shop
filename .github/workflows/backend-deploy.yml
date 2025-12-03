@@ -1,0 +1,48 @@
+name: Build & Deploy Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - 'deployment/docker/backend/**'
+jobs:
+
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Build Spring Boot JAR
+        run: mvn -DskipTests clean package
+        working-directory: ./backend/spring
+
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login ghcr.io -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin
+
+      - name: Build Docker Image
+        run: docker build -t ghcr.io/${{ github.repository }}/backend:latest .
+        working-directory: ./deployment/docker/backend
+
+      - name: Push Docker Image
+        run: docker push ghcr.io/${{ github.repository }}/backend:latest
+
+      - name: Deploy on Server via SSH
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_DEPLOY_SSH_KEY }}
+          script: |
+            cd /opt/challenge-3
+            docker compose pull
+            docker compose up -d
