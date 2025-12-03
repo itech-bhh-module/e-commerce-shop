@@ -7,8 +7,8 @@ on:
     paths:
       - 'backend/**'
       - 'deployment/docker/backend/**'
-jobs:
 
+jobs:
   build-deploy:
     runs-on: ubuntu-latest
 
@@ -30,15 +30,15 @@ jobs:
         run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login ghcr.io -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin
 
       - name: Build Docker Image
-        run: docker build -t ghcr.io/${{ github.repository }}/backend:latest .
-        working-directory: ./deployment/docker/backend
-
-      - name: Push Docker Image
         run: |
           docker build \
             -f deployment/docker/backend/Dockerfile \
             -t ghcr.io/${{ github.repository }}/backend:latest \
             .
+
+      - name: Push Docker Image
+        run: docker push ghcr.io/${{ github.repository }}/backend:latest
+
       - name: Deploy on Server via SSH
         uses: appleboy/ssh-action@v1.1.0
         with:
