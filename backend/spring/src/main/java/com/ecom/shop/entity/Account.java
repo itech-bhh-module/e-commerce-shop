@@ -1,6 +1,7 @@
 package com.ecom.shop.entity;
 
 
+import com.ecom.shop.type.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,6 +37,7 @@ public class Account {
     @Column(name = "is_guest")
     private Boolean isGuest;
 
-    @Column
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender", columnDefinition = "gender_enum")
+    private Gender gender;
 }

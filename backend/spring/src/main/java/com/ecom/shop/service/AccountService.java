@@ -3,7 +3,9 @@ package com.ecom.shop.service;
 import com.ecom.shop.dto.AccountDto;
 import com.ecom.shop.dto.AccountPageDto;
 import com.ecom.shop.entity.Account;
+import com.ecom.shop.entity.Address;
 import com.ecom.shop.repository.AccountRepo;
+import com.ecom.shop.repository.AddressRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ public class AccountService {
     private final AccountRepo accountRepo;
     private final AccountMapperService accountMapperService;
     private final ProductService productService;
+    private final AddressService addressService;
+    private final AddressRepo addressRepo;
 
     public Optional<AccountDto> getAccountById(Integer id){
         return accountRepo.findById(id)
@@ -45,4 +49,22 @@ public class AccountService {
                 productService.getAllAvailableOffersByUsername(username)
         );
     };
+
+
+    public void updateAccountData(AccountDto accountDto){
+
+        Account account = accountRepo.findByUsername(accountDto.getUsername());
+        account.setFirstName(accountDto.getFirstName());
+        account.setLastName(accountDto.getLastName());
+        account.setEmail(accountDto.getEmail());
+        account.setBirthday(accountDto.getBirthday());
+        account.setGender(accountDto.getGender());
+
+        account.getAddress().setPostcode(accountDto.getAddressDto().getPostcode());
+        account.getAddress().setProvince(accountDto.getAddressDto().getProvince());
+        account.getAddress().setStreet(accountDto.getAddressDto().getStreet());
+
+        accountRepo.save(account);
+
+    }
 }
