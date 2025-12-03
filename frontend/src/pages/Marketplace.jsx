@@ -25,14 +25,11 @@ export default function Marketplace() {
         ) : (
             products.map((p) => (
                 <ProductCard 
-                    // WICHTIG: Hier brauchen wir eine eindeutige ID für den Link (/product/123)
-                    // offerId kommt aus deinem JSON, fallback auf id
-                    key={p.offerId || p.id || p.title} 
-                    id={p.offerId || p.id} 
+                    key={p.productId || p.id || p.title} 
+                    id={p.productId || p.id} 
 
                     title={p.title}
                     
-                    // Beschreibung mitgeben für die Rückseite
                     description={p.description} 
                     
                     price={(p.price / 100).toFixed(2)}
