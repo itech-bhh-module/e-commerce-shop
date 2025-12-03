@@ -16,18 +16,24 @@ export default function Marketplace() {
 
  return (
     <div className="w-full px-6 md:px-10 py-10">
-      <h1 className="text-3xl font-bold mb-8">Aktuelle Angebote</h1>
+      <h1 className="text-3xl font-bold mb-8 text-stone-900">Aktuelle Angebote</h1>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
         
         {isLoading ? (
             Array.from({ length: 10 }).map((_, i) => <ProductSkeleton key={i} />)
         ) : (
             products.map((p) => (
                 <ProductCard 
-                    key={p.id || p.title} 
-                    
+                    // WICHTIG: Hier brauchen wir eine eindeutige ID für den Link (/product/123)
+                    // offerId kommt aus deinem JSON, fallback auf id
+                    key={p.offerId || p.id || p.title} 
+                    id={p.offerId || p.id} 
+
                     title={p.title}
+                    
+                    // Beschreibung mitgeben für die Rückseite
+                    description={p.description} 
                     
                     price={(p.price / 100).toFixed(2)}
                     
