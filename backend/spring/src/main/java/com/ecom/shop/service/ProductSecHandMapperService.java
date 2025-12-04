@@ -1,28 +1,28 @@
-// ...existing code...
 package com.ecom.shop.service;
 
-import com.ecom.shop.dto.ProductDto;
-import com.ecom.shop.entity.Product;
+import com.ecom.shop.dto.ProductSecHandDto;
+import com.ecom.shop.entity.ProductSecondHand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ProductMapperService {
+public class ProductSecHandMapperService {
 
     private final ProductImagesService productImagesService;
 
-    public ProductDto toProductDto(Product p) {
+    public ProductSecHandDto toProductSecHandDto(ProductSecondHand p) {
         if (p == null) return null;
-        return new ProductDto(
+        return new ProductSecHandDto(
                 p.getProductId(),
+                p.getAccountId(), // return seller id instead of username
+                p.getCategory().getName(),
+                p.getTitle(),
                 p.getDescription(),
                 p.getPrice(),
-                p.getAmount(),
                 p.getCondition(),
-                p.getTitle(),
+                p.getStatus(),
                 productImagesService.getImagesById(p.getProductId())
         );
     }
 }
-
