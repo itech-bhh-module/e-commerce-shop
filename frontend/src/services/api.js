@@ -153,3 +153,25 @@ export const fetchWatchlist = async (username) => {
 
   return await response.json();
 };
+
+export const updateAccountData = async (accountDto) => {
+  const token = localStorage.getItem("token"); 
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token && { 'Authorization': `Bearer ${token}` })
+  };
+
+  // Passe den Pfad ggf. an (z.B. /shop/account/updateUserData oder nur /shop/updateUserData)
+  const response = await fetch(`${API_BASE_URL}/shop/account/updateUserData`, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(accountDto)
+  });
+
+  if (!response.ok) {
+    throw new Error("Fehler beim Senden der Daten.");
+  }
+
+  // Das Backend gibt ein int zurück (0 = Success, 1 = Error)
+  return await response.json(); 
+};
