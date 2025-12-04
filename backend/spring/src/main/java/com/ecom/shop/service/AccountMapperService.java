@@ -24,5 +24,6 @@ public class AccountMapperService {
                 a.getIsGuest()
         );
     }
+
 }
 

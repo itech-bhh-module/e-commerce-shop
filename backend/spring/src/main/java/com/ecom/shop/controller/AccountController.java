@@ -59,8 +59,14 @@ public class AccountController {
     public AccountPageDto getAccountPageData(@PathVariable String username){
         return accountService.getAccountPageData(username);
     }
-    /*
-    @PostMapping("/updateUserData/{username}")
-
-     */
+    @PostMapping("/updateUserData")
+    public int updateUserData(@RequestBody AccountDto accountData){
+        try{
+            accountService.updateAccountData(accountData);
+            return 0;
+        }catch(Exception e){
+            System.out.println("error while updating a user: " + e);
+            return 1;
+        }
+    }
 }

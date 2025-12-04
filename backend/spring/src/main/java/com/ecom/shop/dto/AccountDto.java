@@ -1,5 +1,6 @@
 package com.ecom.shop.dto;
 
+import com.ecom.shop.type.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,7 @@ public class AccountDto {
     AddressDto addressDto;
     String email;
     Date birthday;
-    String gender;
+    Gender gender;
     Boolean isGuest;
 }
 
