@@ -10,12 +10,13 @@ import org.springframework.stereotype.Service;
 public class ProductSecHandMapperService {
 
     private final ProductImagesService productImagesService;
+    private final CredentialService credentialService;
 
     public ProductSecHandDto toProductSecHandDto(ProductSecondHand p) {
         if (p == null) return null;
         return new ProductSecHandDto(
                 p.getProductId(),
-                p.getAccountId(), // return seller id instead of username
+                credentialService.findUsernameByAccountId(p.getAccountId()),
                 p.getCategory().getName(),
                 p.getTitle(),
                 p.getDescription(),

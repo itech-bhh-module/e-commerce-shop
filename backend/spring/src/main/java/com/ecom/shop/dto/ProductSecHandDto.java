@@ -15,8 +15,7 @@ import java.util.List;
 public class ProductSecHandDto {
     private int productId;
 
-    // changed: mapper should not call services to fetch usernames. expose seller id instead
-    private int sellerId;
+    private String sellerUsername;
 
     private String category;
 
