@@ -1,162 +1,80 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
-// --- FÜR DEIN ECHTES PROJEKT: ---
-// Bitte diese Zeilen einkommentieren und den Mock-Code unten löschen!
-// import { fetchAccountPageData, fetchWatchlist } from '../services/api'; 
-// import ProductCard from '../components/ProductCard';
-
-// =====================================================================
-// === MOCK CODE (Damit die Vorschau hier funktioniert) ================
-// =====================================================================
-
-// 1. Mock ProductCard Komponente
-const ProductCard = ({ title, price, category, imageUrl }) => (
-  <div className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
-    <div className="h-48 bg-stone-100 flex items-center justify-center text-stone-400 overflow-hidden relative">
-      {imageUrl ? (
-        <img src={imageUrl} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-      ) : (
-        <span className="text-4xl">☕</span>
-      )}
-      <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-stone-600 shadow-sm">
-        {category || 'Neu'}
-      </div>
-    </div>
-    <div className="p-4">
-      <h3 className="font-bold text-stone-900 truncate text-lg" title={title}>{title}</h3>
-      <p className="text-orange-600 font-black mt-1 text-xl">{price} €</p>
-    </div>
-  </div>
-);
-
-// 2. Mock API Funktionen & Daten
-const mockAccountData = {
-  accountData: {
-    firstName: 'Max',
-    lastName: 'Kaffeefan',
-    email: 'max.mustermann@mail.com',
-    birthday: '1985-05-19T22:00:00.000Z',
-    addressDto: {
-      street: 'Bohnenweg 5',
-      postcode: '10115',
-      province: 'Berlin'
-    }
-  },
-  products: [
-    { offerId: 101, title: 'Espresso Blend "Dark Knight"', price: 2499, condition: 'Neu' }
-  ]
-};
-
-// Hier simulieren wir die Datenstruktur, wie sie von deiner neuen Watchlist-Tabelle kommen könnte
-const mockWatchlistData = [
-  { 
-    watchlistId: 1, 
-    // Fall 1: Verschachteltes Produkt (Java Entity Struktur)
-    product: { 
-        title: 'Siebträgermaschine Profi', 
-        price: 85000, 
-        condition: 'Gut',
-        imageUrl: 'https://images.unsplash.com/photo-1570554807469-6d60a581413a?auto=format&fit=crop&q=80&w=400'
-    } 
-  },
-  { 
-    watchlistId: 2, 
-    // Fall 2: Flache Struktur (Fallback)
-    title: 'Tamper Set (58mm)', 
-    price: 2000, 
-    condition: 'Gebraucht'
-  }
-];
-
-const fetchAccountPageData = async (username) => {
-  return new Promise((resolve) => setTimeout(() => resolve(mockAccountData), 600));
-};
-
-const fetchWatchlist = async (username) => {
-  return new Promise((resolve) => setTimeout(() => resolve(mockWatchlistData), 800));
-};
-// =====================================================================
-// === ENDE MOCK CODE ==================================================
-// =====================================================================
-
+// Echte Imports
+import { fetchAccountPageData, fetchWatchlist, updateAccountData } from '../services/api';
+import ProductCard from '../components/ProductCard';
 
 export default function AccountPage() {
+  // --- STATE ---
   const [userData, setUserData] = useState({
+    username: '', 
     firstname: '',
     lastname: '',
     email: '',
     birthday: '',
     street: '',
     postcode: '',
-    city: ''
+    city: '',     
+    gender: 'female',
+    isGuest: false
   });
 
   const [myOffers, setMyOffers] = useState([]);
+  const [myWatchlist, setMyWatchlist] = useState([]);
+  const [watchlistError, setWatchlistError] = useState(null);
   
-  // Watchlist State
-  const [myWatchlist, setMyWatchlist] = useState([]); 
-  const [watchlistError, setWatchlistError] = useState(null); // Neuer State für Watchlist-Fehler
-
-  const [activeTab, setActiveTab] = useState('profile'); // State für Tabs
-
+  const [activeTab, setActiveTab] = useState('profile');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  
-  const [debugData, setDebugData] = useState(null);
+  const [saveError, setSaveError] = useState(null);
 
+  // --- DATA LOADING ---
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Mock Username für Vorschau
-        const storedUsername = localStorage.getItem("username") || "previewUser";
+        const storedUsername = localStorage.getItem("username");
 
         if (!storedUsername) {
-          throw new Error("Nicht eingeloggt (Kein Username gefunden).");
+          setIsLoading(false);
+          return; 
         }
 
-        // 1. Account Daten laden
         const dto = await fetchAccountPageData(storedUsername);
-        
-        console.log("🔥 PROFIL-DATEN:", dto);
-        setDebugData(dto); 
-
         const acc = dto.accountData || {}; 
         const addr = acc.addressDto || {}; 
 
         setUserData({
+          username: acc.username || storedUsername,
           firstname: acc.firstName || '',
           lastname: acc.lastName || '',
           email: acc.email || '',
           birthday: acc.birthday ? acc.birthday.toString().split('T')[0] : '',
           street: addr.street || '',
           postcode: addr.postcode || '',
-          city: addr.province || '' 
+          city: addr.province || '',
+          gender: acc.gender || 'female',
+          isGuest: acc.isGuest || false
         });
 
         if (dto.products && Array.isArray(dto.products)) {
             setMyOffers(dto.products);
         }
 
-        // 2. Watchlist separat laden
         try {
-            setWatchlistError(null); // Reset Fehler vor neuem Laden
-            const watchlistData = await fetchWatchlist(storedUsername);
-            console.log("🔥 WATCHLIST RAW DATEN:", watchlistData);
-            
-            if (Array.isArray(watchlistData)) {
-                setMyWatchlist(watchlistData);
-            } else {
-                console.warn("Watchlist ist kein Array:", watchlistData);
-            }
+            setWatchlistError(null);
+            const watchlistResponse = await fetchWatchlist(storedUsername);
+            const items = watchlistResponse.watchedProducts || [];
+            setMyWatchlist(items);
         } catch (wlError) {
             console.error("Fehler beim Laden der Watchlist:", wlError);
-            setWatchlistError(wlError.message || "Konnte Watchlist nicht laden");
+            setWatchlistError("Konnte Watchlist nicht laden");
         }
 
       } catch (err) {
-        console.error("Haupt-Fehler:", err);
-        setError(err.message);
+        console.error("Fehler beim Laden der Profildaten:", err);
+        setError("Deine Profildaten konnten nicht geladen werden.");
       } finally {
         setIsLoading(false);
       }
@@ -165,28 +83,84 @@ export default function AccountPage() {
     loadData();
   }, []);
 
+  // --- HANDLERS ---
   const handleChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    alert("Speichern an Backend gesendet!");
-    setIsEditing(false);
+    setSaveError(null);
+
+    try {
+        let isoDate = null;
+        if (userData.birthday) {
+            const dateObj = new Date(userData.birthday);
+            isoDate = dateObj.toISOString(); 
+        }
+
+        const accountDto = {
+            firstName: userData.firstname,
+            lastName: userData.lastname,
+            username: userData.username,
+            email: userData.email,
+            birthday: isoDate,
+            gender: userData.gender,
+            isGuest: userData.isGuest,
+            addressDto: {
+                street: userData.street,
+                postcode: userData.postcode,
+                province: userData.city 
+            }
+        };
+
+        const result = await updateAccountData(accountDto);
+
+        // API gibt 0 zurück bei Erfolg
+        if (result === 0) {
+            // KEIN ALERT MEHR
+            setIsEditing(false); // Beendet den Bearbeitungsmodus sofort
+        } else {
+            setSaveError("Das Backend hat einen Fehler gemeldet (Code 1). Bitte Eingaben prüfen.");
+        }
+
+    } catch (err) {
+        console.error("Fehler beim Speichern:", err);
+        setSaveError("Verbindungsfehler: " + err.message);
+    }
   };
 
-  if (isLoading) return <div className="p-10 text-center font-bold text-stone-500 animate-pulse">Lade Profil...</div>;
+  // --- RENDERING ---
+
+  if (isLoading) {
+    return (
+        <div className="max-w-5xl mx-auto px-6 py-12 text-center">
+            <p className="text-stone-500 font-bold animate-pulse">Lade Profil...</p>
+        </div>
+    );
+  }
   
-  if (error) return (
-    <div className="p-10 text-center">
-      <h2 className="text-red-600 font-bold mb-2">Fehler beim Laden</h2>
-      <p className="text-stone-600">{error}</p>
-      <a href="/" className="underline mt-4 block text-stone-900 hover:text-orange-600">Zurück zur Startseite</a>
-    </div>
-  );
+  if (!localStorage.getItem("username")) {
+    return (
+      <div className="max-w-5xl mx-auto px-6 py-20 text-center">
+          <h1 className="text-3xl font-black text-stone-900 mb-4">Bitte melde dich an</h1>
+          <Link to="/login" className="text-orange-600 font-bold hover:underline">Zum Login →</Link>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+        <div className="max-w-5xl mx-auto px-6 py-12 text-center">
+             <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl inline-block">
+                {error}
+             </div>
+        </div>
+    );
+  }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12 font-sans text-stone-800">
+    <div className="max-w-5xl mx-auto px-6 py-12 font-sans text-stone-800 min-h-[80vh]">
       
       <div className="flex justify-between items-end mb-8">
         <div>
@@ -196,28 +170,46 @@ export default function AccountPage() {
       </div>
 
       {/* --- TABS NAVIGATION --- */}
-      <div className="flex space-x-8 border-b border-stone-200 mb-10 overflow-x-auto">
+      <div className="flex flex-wrap gap-3 mb-10">
         <button 
             onClick={() => setActiveTab('profile')}
-            className={`pb-4 font-bold text-lg transition-colors border-b-2 whitespace-nowrap ${activeTab === 'profile' ? 'border-orange-600 text-orange-600' : 'border-transparent text-stone-500 hover:text-stone-800'}`}
+            className={`font-medium px-4 py-2 rounded-lg transition-all flex items-center gap-2 active:scale-95 ${
+                activeTab === 'profile' 
+                ? 'bg-stone-900 text-white shadow-md' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900'
+            }`}
         >
             Profil & Daten
         </button>
+        
         <button 
             onClick={() => setActiveTab('offers')}
-            className={`pb-4 font-bold text-lg transition-colors border-b-2 whitespace-nowrap ${activeTab === 'offers' ? 'border-orange-600 text-orange-600' : 'border-transparent text-stone-500 hover:text-stone-800'}`}
+            className={`font-medium px-4 py-2 rounded-lg transition-all flex items-center gap-2 active:scale-95 ${
+                activeTab === 'offers' 
+                ? 'bg-stone-900 text-white shadow-md' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900'
+            }`}
         >
-            Meine Angebote <span className="ml-2 bg-stone-100 text-stone-600 text-xs px-2 py-1 rounded-full">{myOffers.length}</span>
+            Meine Angebote 
+            <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === 'offers' ? 'bg-stone-700 text-white' : 'bg-white text-gray-600'}`}>
+                {myOffers.length}
+            </span>
         </button>
+        
         <button 
             onClick={() => setActiveTab('watchlist')}
-            className={`pb-4 font-bold text-lg transition-colors border-b-2 whitespace-nowrap ${activeTab === 'watchlist' ? 'border-orange-600 text-orange-600' : 'border-transparent text-stone-500 hover:text-stone-800'}`}
+            className={`font-medium px-4 py-2 rounded-lg transition-all flex items-center gap-2 active:scale-95 ${
+                activeTab === 'watchlist' 
+                ? 'bg-stone-900 text-white shadow-md' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900'
+            }`}
         >
-            Merkliste 
+            Watchlist
             {myWatchlist.length > 0 && (
-                <span className="ml-2 bg-stone-100 text-stone-600 text-xs px-2 py-1 rounded-full">{myWatchlist.length}</span>
+                <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === 'watchlist' ? 'bg-stone-700 text-white' : 'bg-white text-gray-600'}`}>
+                    {myWatchlist.length}
+                </span>
             )}
-            {watchlistError && <span className="ml-2 text-red-500 text-xs">⚠️</span>}
         </button>
       </div>
 
@@ -226,18 +218,27 @@ export default function AccountPage() {
       {activeTab === 'profile' && (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 animate-in fade-in zoom-in-95 duration-300">
         
+        {/* LINKER BEREICH: AVATAR */}
         <div className="md:col-span-1">
-            <div className="bg-white p-8 rounded-2xl border border-stone-200 text-center shadow-sm space-y-6">
-                <div className="w-24 h-24 bg-stone-900 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4">
-                    {userData.firstname && userData.firstname.charAt(0)}
-                    {userData.lastname && userData.lastname.charAt(0)}
+            <div className="bg-white p-8 rounded-2xl border border-stone-200 text-center shadow-sm space-y-4">
+                <div className="w-24 h-24 bg-stone-900 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-2">
+                    {userData.firstname ? userData.firstname.charAt(0) : '?'}
+                    {userData.lastname ? userData.lastname.charAt(0) : ''}
                 </div>
-                <h2 className="font-bold text-xl">
-                  {userData.firstname ? `${userData.firstname} ${userData.lastname}` : 'Unbekannter Nutzer'}
-                </h2>
-                <p className="text-stone-500 text-sm mb-4">{userData.email || 'Keine E-Mail'}</p>
-                <div className="pt-4 border-t border-stone-100">
-                    <span className="inline-block bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">
+                
+                <div>
+                    <h2 className="font-bold text-xl leading-tight">
+                        {userData.firstname ? `${userData.firstname} ${userData.lastname}` : 'Unbekannter Nutzer'}
+                    </h2>
+                    {userData.username && (
+                        <p className="text-orange-600 font-bold text-sm mt-1">@{userData.username}</p>
+                    )}
+                </div>
+
+                <p className="text-stone-500 text-sm border-b border-stone-100 pb-4">{userData.email || 'Keine E-Mail'}</p>
+                
+                <div className="">
+                    <span className="inline-block bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full">
                         Verifizierter Verkäufer
                     </span>
                 </div>
@@ -252,10 +253,17 @@ export default function AccountPage() {
             </div>
         </div>
 
+        {/* RECHTER BEREICH: FORMULAR */}
         <div className="md:col-span-2">
             <form onSubmit={handleSave} className="bg-white p-8 rounded-2xl border border-stone-200 shadow-sm space-y-6">
                 
                 <h3 className="font-bold text-lg border-b border-stone-100 pb-2 mb-4 text-stone-800">Persönliche Daten</h3>
+
+                {saveError && (
+                    <div className="bg-red-50 text-red-700 border border-red-200 p-3 rounded-lg text-sm mb-4">
+                        {saveError}
+                    </div>
+                )}
                 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -289,9 +297,38 @@ export default function AccountPage() {
                         name="email"
                         value={userData.email}
                         onChange={handleChange}
-                        disabled={true}
-                        className="w-full bg-stone-50 border border-stone-200 text-stone-500 rounded-lg px-4 py-2 cursor-not-allowed outline-none"
+                        disabled={!isEditing}
+                        className={`w-full border rounded-lg px-4 py-2 transition-all outline-none ${isEditing ? 'bg-white border-stone-300 focus:ring-2 focus:ring-orange-500' : 'bg-stone-50 border-stone-200 text-stone-500 cursor-not-allowed'}`}
                     />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-bold text-stone-700 mb-1">Geschlecht</label>
+                        <select
+                            name="gender"
+                            value={userData.gender}
+                            onChange={handleChange}
+                            disabled={!isEditing}
+                            className={`w-full border rounded-lg px-4 py-2 transition-all outline-none ${isEditing ? 'bg-white border-stone-300 focus:ring-2 focus:ring-orange-500' : 'bg-stone-50 border-stone-200 text-stone-500 cursor-not-allowed'}`}
+                        >
+                            <option value="female">Weiblich</option>
+                            <option value="male">Männlich</option>
+                            <option value="divers">Divers</option>
+                            <option value="notanswered">Nicht Angeben</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-stone-700 mb-1">Geburtstag</label>
+                        <input 
+                            type="date" 
+                            name="birthday"
+                            value={userData.birthday}
+                            onChange={handleChange}
+                            disabled={!isEditing}
+                            className={`w-full border rounded-lg px-4 py-2 transition-all outline-none ${isEditing ? 'bg-white border-stone-300 focus:ring-2 focus:ring-orange-500' : 'bg-stone-50 border-stone-200 text-stone-500 cursor-not-allowed'}`}
+                        />
+                    </div>
                 </div>
 
                 <h3 className="font-bold text-lg border-b border-stone-100 pb-2 mb-4 pt-4 text-stone-800">Anschrift</h3>
@@ -322,7 +359,7 @@ export default function AccountPage() {
                         />
                     </div>
                     <div className="col-span-2">
-                        <label className="block text-sm font-bold text-stone-700 mb-1">Stadt</label>
+                        <label className="block text-sm font-bold text-stone-700 mb-1">Stadt (Provinz)</label>
                         <input 
                             type="text" 
                             name="city"
@@ -338,7 +375,10 @@ export default function AccountPage() {
                     <div className="flex gap-4 pt-6 animate-in fade-in slide-in-from-top-2">
                         <button 
                             type="button"
-                            onClick={() => setIsEditing(false)}
+                            onClick={() => {
+                                setIsEditing(false);
+                                setSaveError(null);
+                            }}
                             className="flex-1 bg-stone-100 text-stone-700 font-bold py-3 rounded-xl hover:bg-stone-200 transition-colors"
                         >
                             Abbrechen
@@ -356,7 +396,6 @@ export default function AccountPage() {
       </div>
       )}
 
-
       {/* --- CONTENT: ANGEBOTE --- */}
       {activeTab === 'offers' && (
       <div className="mt-4 animate-in fade-in zoom-in-95 duration-300">
@@ -367,13 +406,15 @@ export default function AccountPage() {
         {myOffers.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {myOffers.map((product) => (
-              <ProductCard 
-                key={product.offerId || product.id || Math.random()} 
-                title={product.title}
-                price={(product.price / 100).toFixed(2)}
-                category={product.condition}
-                imageUrl={product.images && product.images.length > 0 ? product.images[0].imageUrl : null}
-              />
+               <div key={product.offerId || product.id} className="h-full">
+                <ProductCard 
+                    id={product.offerId || product.id}
+                    title={product.title}
+                    price={(product.price / 100).toFixed(2)}
+                    category={product.condition}
+                    imageUrl={product.images && product.images.length > 0 ? product.images[0].imageUrl : null}
+                />
+              </div>
             ))}
           </div>
         ) : (
@@ -394,34 +435,41 @@ export default function AccountPage() {
           Meine Merkliste ({myWatchlist.length})
         </h2>
 
-        {/* FEHLERMELDUNG ANZEIGEN, falls vorhanden */}
         {watchlistError && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-                <strong>Fehler beim Laden der Merkliste:</strong> {watchlistError}
-                <p className="text-sm mt-1">Prüfe die Browser-Konsole für Details oder ob das Backend läuft.</p>
+                <strong>Fehler:</strong> {watchlistError}
             </div>
         )}
 
         {myWatchlist.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {myWatchlist.map((item) => {
-                // Zugriff auf das Produkt innerhalb des Watchlist-Items
-                // Wir prüfen, ob es 'product' (Java-Entity neu) oder direkt im Item liegt (flat)
-                const product = item.product || item; 
-                
-                // Fallback für fehlende Werte, um Crash zu verhindern
-                const title = product.title || product.productName || "Unbekanntes Produkt";
-                const price = product.price ? (product.price / 100).toFixed(2) : "0.00";
-                const imageUrl = product.imageUrl || (product.images && product.images.length > 0 ? product.images[0].imageUrl : null);
+                const title = item.title || "Unbekanntes Produkt";
+                const price = item.price ? (item.price / 100).toFixed(2) : "0.00";
+                const imageUrl = item.images && item.images.length > 0 ? item.images[0].imageUrl : null;
 
                 return (
-                  <ProductCard 
-                    key={item.watchlistId || Math.random()} 
-                    title={title}
-                    price={price}
-                    category={product.condition}
-                    imageUrl={imageUrl}
-                  />
+                  <div key={item.productId || Math.random()} className="relative h-full group">
+                    <ProductCard 
+                        id={item.productId}
+                        title={title}
+                        price={price}
+                        category={item.condition}
+                        imageUrl={imageUrl}
+                    />
+                    
+                    <button 
+                        className="absolute top-2 right-2 bg-white text-stone-400 hover:text-red-600 w-8 h-8 flex items-center justify-center rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                        title="Von Merkliste entfernen"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            alert(`Produkt ID ${item.productId} entfernen - Logik implementieren.`);
+                        }}
+                    >
+                        ✕
+                    </button>
+                  </div>
                 );
             })}
           </div>
@@ -430,9 +478,9 @@ export default function AccountPage() {
             <div className="text-center py-16 bg-stone-50 rounded-2xl border border-stone-200 border-dashed">
                 <span className="text-4xl block mb-2">👀</span>
                 <p className="text-stone-500 font-medium mb-4">Du hast dir noch keine Produkte gemerkt.</p>
-                <a href="/shop" className="text-orange-600 font-bold hover:underline">
+                <Link to="/marketplace" className="text-orange-600 font-bold hover:underline">
                 Stöbere jetzt im Shop
-                </a>
+                </Link>
             </div>
           )
         )}
