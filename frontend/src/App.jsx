@@ -6,6 +6,7 @@ import Marketplace from './pages/Marketplace';
 import Register from './pages/Register';
 import AccountPage from './pages/AccountPage';
 import ProductDetailsPage from './pages/ProductDetailsPage';
+import Watchlist from './pages/Watchlist'; // Import der neuen Seite
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/register" element={<Register />} />
           <Route path="/account" element={<AccountPage />} />
+          <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/product/:id" element={<ProductDetailsPage />} />
         </Routes>
       </main>

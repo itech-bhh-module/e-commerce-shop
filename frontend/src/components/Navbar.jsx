@@ -35,6 +35,11 @@ export default function Navbar() {
           <div className="hidden md:flex gap-7">
              <Link to="/" className="text-lg hover:text-orange-600 text-orange-700 font-medium">Startseite</Link>
              <Link to="/marketplace" className="text-lg hover:text-orange-600 text-orange-700 font-medium">Marktplatz</Link>
+             {username && (
+                <Link to="/watchlist" className="text-lg hover:text-orange-600 text-orange-700 font-medium flex items-center gap-1">
+                    Merkliste
+                </Link>
+             )}
           </div>
 
           <div className="flex gap-4 items-center">

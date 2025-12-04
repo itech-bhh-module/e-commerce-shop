@@ -1,6 +1,84 @@
 import React, { useState, useEffect } from 'react';
-import { fetchAccountPageData } from '../services/api';
-import ProductCard from '../components/ProductCard';
+
+// --- FÜR DEIN ECHTES PROJEKT: ---
+// Bitte diese Zeilen einkommentieren und den Mock-Code unten löschen!
+// import { fetchAccountPageData, fetchWatchlist } from '../services/api'; 
+// import ProductCard from '../components/ProductCard';
+
+// =====================================================================
+// === MOCK CODE (Damit die Vorschau hier funktioniert) ================
+// =====================================================================
+
+// 1. Mock ProductCard Komponente
+const ProductCard = ({ title, price, category, imageUrl }) => (
+  <div className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+    <div className="h-48 bg-stone-100 flex items-center justify-center text-stone-400 overflow-hidden relative">
+      {imageUrl ? (
+        <img src={imageUrl} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+      ) : (
+        <span className="text-4xl">☕</span>
+      )}
+      <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-stone-600 shadow-sm">
+        {category || 'Neu'}
+      </div>
+    </div>
+    <div className="p-4">
+      <h3 className="font-bold text-stone-900 truncate text-lg" title={title}>{title}</h3>
+      <p className="text-orange-600 font-black mt-1 text-xl">{price} €</p>
+    </div>
+  </div>
+);
+
+// 2. Mock API Funktionen & Daten
+const mockAccountData = {
+  accountData: {
+    firstName: 'Max',
+    lastName: 'Kaffeefan',
+    email: 'max.mustermann@mail.com',
+    birthday: '1985-05-19T22:00:00.000Z',
+    addressDto: {
+      street: 'Bohnenweg 5',
+      postcode: '10115',
+      province: 'Berlin'
+    }
+  },
+  products: [
+    { offerId: 101, title: 'Espresso Blend "Dark Knight"', price: 2499, condition: 'Neu' }
+  ]
+};
+
+// Hier simulieren wir die Datenstruktur, wie sie von deiner neuen Watchlist-Tabelle kommen könnte
+const mockWatchlistData = [
+  { 
+    watchlistId: 1, 
+    // Fall 1: Verschachteltes Produkt (Java Entity Struktur)
+    product: { 
+        title: 'Siebträgermaschine Profi', 
+        price: 85000, 
+        condition: 'Gut',
+        imageUrl: 'https://images.unsplash.com/photo-1570554807469-6d60a581413a?auto=format&fit=crop&q=80&w=400'
+    } 
+  },
+  { 
+    watchlistId: 2, 
+    // Fall 2: Flache Struktur (Fallback)
+    title: 'Tamper Set (58mm)', 
+    price: 2000, 
+    condition: 'Gebraucht'
+  }
+];
+
+const fetchAccountPageData = async (username) => {
+  return new Promise((resolve) => setTimeout(() => resolve(mockAccountData), 600));
+};
+
+const fetchWatchlist = async (username) => {
+  return new Promise((resolve) => setTimeout(() => resolve(mockWatchlistData), 800));
+};
+// =====================================================================
+// === ENDE MOCK CODE ==================================================
+// =====================================================================
+
 
 export default function AccountPage() {
   const [userData, setUserData] = useState({
@@ -14,6 +92,12 @@ export default function AccountPage() {
   });
 
   const [myOffers, setMyOffers] = useState([]);
+  
+  // Watchlist State
+  const [myWatchlist, setMyWatchlist] = useState([]); 
+  const [watchlistError, setWatchlistError] = useState(null); // Neuer State für Watchlist-Fehler
+
+  const [activeTab, setActiveTab] = useState('profile'); // State für Tabs
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,15 +108,17 @@ export default function AccountPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const storedUsername = localStorage.getItem("username");
+        // Mock Username für Vorschau
+        const storedUsername = localStorage.getItem("username") || "previewUser";
 
         if (!storedUsername) {
           throw new Error("Nicht eingeloggt (Kein Username gefunden).");
         }
 
+        // 1. Account Daten laden
         const dto = await fetchAccountPageData(storedUsername);
         
-        console.log("🔥 VOM BACKEND EMPFANGEN:", dto);
+        console.log("🔥 PROFIL-DATEN:", dto);
         setDebugData(dto); 
 
         const acc = dto.accountData || {}; 
@@ -52,8 +138,24 @@ export default function AccountPage() {
             setMyOffers(dto.products);
         }
 
+        // 2. Watchlist separat laden
+        try {
+            setWatchlistError(null); // Reset Fehler vor neuem Laden
+            const watchlistData = await fetchWatchlist(storedUsername);
+            console.log("🔥 WATCHLIST RAW DATEN:", watchlistData);
+            
+            if (Array.isArray(watchlistData)) {
+                setMyWatchlist(watchlistData);
+            } else {
+                console.warn("Watchlist ist kein Array:", watchlistData);
+            }
+        } catch (wlError) {
+            console.error("Fehler beim Laden der Watchlist:", wlError);
+            setWatchlistError(wlError.message || "Konnte Watchlist nicht laden");
+        }
+
       } catch (err) {
-        console.error("Fehler:", err);
+        console.error("Haupt-Fehler:", err);
         setError(err.message);
       } finally {
         setIsLoading(false);
@@ -73,7 +175,7 @@ export default function AccountPage() {
     setIsEditing(false);
   };
 
-  if (isLoading) return <div className="p-10 text-center font-bold text-stone-500">Lade Profil...</div>;
+  if (isLoading) return <div className="p-10 text-center font-bold text-stone-500 animate-pulse">Lade Profil...</div>;
   
   if (error) return (
     <div className="p-10 text-center">
@@ -84,28 +186,48 @@ export default function AccountPage() {
   );
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12">
+    <div className="max-w-5xl mx-auto px-6 py-12 font-sans text-stone-800">
       
       <div className="flex justify-between items-end mb-8">
         <div>
-          <h1 className="text-3xl font-black text-stone-900">Mein Profil</h1>
+          <h1 className="text-3xl font-black text-stone-900">Mein Konto</h1>
           <p className="text-stone-500 mt-2">Verwalte deine persönlichen Daten und Adressen.</p>
         </div>
-        
-        {!isEditing && (
-            <button 
-                onClick={() => setIsEditing(true)}
-                className="bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2 active:scale-95"
-            >
-                <span>✎</span> Daten bearbeiten
-            </button>
-        )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+      {/* --- TABS NAVIGATION --- */}
+      <div className="flex space-x-8 border-b border-stone-200 mb-10 overflow-x-auto">
+        <button 
+            onClick={() => setActiveTab('profile')}
+            className={`pb-4 font-bold text-lg transition-colors border-b-2 whitespace-nowrap ${activeTab === 'profile' ? 'border-orange-600 text-orange-600' : 'border-transparent text-stone-500 hover:text-stone-800'}`}
+        >
+            Profil & Daten
+        </button>
+        <button 
+            onClick={() => setActiveTab('offers')}
+            className={`pb-4 font-bold text-lg transition-colors border-b-2 whitespace-nowrap ${activeTab === 'offers' ? 'border-orange-600 text-orange-600' : 'border-transparent text-stone-500 hover:text-stone-800'}`}
+        >
+            Meine Angebote <span className="ml-2 bg-stone-100 text-stone-600 text-xs px-2 py-1 rounded-full">{myOffers.length}</span>
+        </button>
+        <button 
+            onClick={() => setActiveTab('watchlist')}
+            className={`pb-4 font-bold text-lg transition-colors border-b-2 whitespace-nowrap ${activeTab === 'watchlist' ? 'border-orange-600 text-orange-600' : 'border-transparent text-stone-500 hover:text-stone-800'}`}
+        >
+            Merkliste 
+            {myWatchlist.length > 0 && (
+                <span className="ml-2 bg-stone-100 text-stone-600 text-xs px-2 py-1 rounded-full">{myWatchlist.length}</span>
+            )}
+            {watchlistError && <span className="ml-2 text-red-500 text-xs">⚠️</span>}
+        </button>
+      </div>
+
+
+      {/* --- CONTENT: PROFIL --- */}
+      {activeTab === 'profile' && (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 animate-in fade-in zoom-in-95 duration-300">
         
         <div className="md:col-span-1">
-            <form onSubmit={handleSave} className="bg-white p-8 rounded-2xl border border-stone-200 text-center shadow-sm space-y-6">
+            <div className="bg-white p-8 rounded-2xl border border-stone-200 text-center shadow-sm space-y-6">
                 <div className="w-24 h-24 bg-stone-900 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4">
                     {userData.firstname && userData.firstname.charAt(0)}
                     {userData.lastname && userData.lastname.charAt(0)}
@@ -119,7 +241,15 @@ export default function AccountPage() {
                         Verifizierter Verkäufer
                     </span>
                 </div>
-            </form>
+                {!isEditing && (
+                    <button 
+                        onClick={() => setIsEditing(true)}
+                        className="w-full mt-4 bg-gray-50 text-gray-700 hover:bg-gray-100 font-medium px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    >
+                        <span>✎</span> Bearbeiten
+                    </button>
+                )}
+            </div>
         </div>
 
         <div className="md:col-span-2">
@@ -224,8 +354,12 @@ export default function AccountPage() {
             </form>
         </div>
       </div>
+      )}
 
-      <div className="mt-12 border-t border-stone-200 pt-10">
+
+      {/* --- CONTENT: ANGEBOTE --- */}
+      {activeTab === 'offers' && (
+      <div className="mt-4 animate-in fade-in zoom-in-95 duration-300">
         <h2 className="text-2xl font-black text-stone-900 mb-6">
           Meine aktiven Angebote ({myOffers.length})
         </h2>
@@ -234,7 +368,7 @@ export default function AccountPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {myOffers.map((product) => (
               <ProductCard 
-                key={product.offerId || product.title} 
+                key={product.offerId || product.id || Math.random()} 
                 title={product.title}
                 price={(product.price / 100).toFixed(2)}
                 category={product.condition}
@@ -251,6 +385,59 @@ export default function AccountPage() {
           </div>
         )}
       </div>
+      )}
+
+      {/* --- CONTENT: WATCHLIST --- */}
+      {activeTab === 'watchlist' && (
+      <div className="mt-4 animate-in fade-in zoom-in-95 duration-300">
+        <h2 className="text-2xl font-black text-stone-900 mb-6">
+          Meine Merkliste ({myWatchlist.length})
+        </h2>
+
+        {/* FEHLERMELDUNG ANZEIGEN, falls vorhanden */}
+        {watchlistError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <strong>Fehler beim Laden der Merkliste:</strong> {watchlistError}
+                <p className="text-sm mt-1">Prüfe die Browser-Konsole für Details oder ob das Backend läuft.</p>
+            </div>
+        )}
+
+        {myWatchlist.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {myWatchlist.map((item) => {
+                // Zugriff auf das Produkt innerhalb des Watchlist-Items
+                // Wir prüfen, ob es 'product' (Java-Entity neu) oder direkt im Item liegt (flat)
+                const product = item.product || item; 
+                
+                // Fallback für fehlende Werte, um Crash zu verhindern
+                const title = product.title || product.productName || "Unbekanntes Produkt";
+                const price = product.price ? (product.price / 100).toFixed(2) : "0.00";
+                const imageUrl = product.imageUrl || (product.images && product.images.length > 0 ? product.images[0].imageUrl : null);
+
+                return (
+                  <ProductCard 
+                    key={item.watchlistId || Math.random()} 
+                    title={title}
+                    price={price}
+                    category={product.condition}
+                    imageUrl={imageUrl}
+                  />
+                );
+            })}
+          </div>
+        ) : (
+          !watchlistError && (
+            <div className="text-center py-16 bg-stone-50 rounded-2xl border border-stone-200 border-dashed">
+                <span className="text-4xl block mb-2">👀</span>
+                <p className="text-stone-500 font-medium mb-4">Du hast dir noch keine Produkte gemerkt.</p>
+                <a href="/shop" className="text-orange-600 font-bold hover:underline">
+                Stöbere jetzt im Shop
+                </a>
+            </div>
+          )
+        )}
+      </div>
+      )}
 
     </div>
   );

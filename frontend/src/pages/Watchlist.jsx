@@ -1,0 +1,133 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { fetchWatchlist } from '../services/api';
+import ProductCard from '../components/ProductCard'; // Nutzt jetzt deine neue Link-Logik
+
+export default function Watchlist() {
+  const [watchlistItems, setWatchlistItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const loadWatchlist = async () => {
+      try {
+        const username = localStorage.getItem("username");
+        
+        if (!username) {
+            setIsLoading(false);
+            return; 
+        }
+
+        const data = await fetchWatchlist(username);
+        // Falls data.watchedProducts null ist, leeres Array nutzen
+        setWatchlistItems(data.watchedProducts || []);
+      } catch (err) {
+        console.error("Fehler beim Laden der Watchlist:", err);
+        setError("Deine Merkliste konnte nicht geladen werden.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadWatchlist();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="max-w-7xl mx-auto px-6 py-12 text-center">
+        <p className="text-stone-500 font-bold animate-pulse">Lade deine Merkliste...</p>
+      </div>
+    );
+  }
+
+  if (!localStorage.getItem("username")) {
+      return (
+        <div className="max-w-7xl mx-auto px-6 py-20 text-center">
+            <h1 className="text-3xl font-black text-stone-900 mb-4">Bitte melde dich an</h1>
+            <p className="text-stone-600 mb-8">Um deine Merkliste zu sehen, musst du eingeloggt sein.</p>
+            <Link to="/login" className="text-orange-600 font-bold hover:underline">
+                Zum Login →
+            </Link>
+        </div>
+      );
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto px-6 py-12 min-h-[60vh]">
+      <div className="flex justify-between items-end mb-8 border-b border-stone-200 pb-4">
+        <div>
+          <h1 className="text-3xl font-black text-stone-900">Meine Merkliste</h1>
+          <p className="text-stone-500 mt-2">
+            {watchlistItems.length} Artikel gespeichert
+          </p>
+        </div>
+        <Link to="/marketplace" className="text-orange-600 font-bold hover:underline hidden sm:block">
+            Weiterstöbern →
+        </Link>
+      </div>
+
+      {error ? (
+        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-center">
+            {error}
+        </div>
+      ) : watchlistItems.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {watchlistItems.map((item) => {
+            // --- DATEN-MAPPING ---
+            
+            // 1. Preis formatieren (nur die Zahl, da ProductCard das "€" hinzufügt)
+            const priceValue = item.price 
+                ? (item.price / 100).toFixed(2) // Ergebnis: "850.00"
+                : '0.00';
+            
+            // 2. Bild URL holen
+            const imageUrl = item.images && item.images.length > 0 
+                ? item.images[0].imageUrl 
+                : null;
+
+            return (
+                <div key={item.productId} className="relative group h-full">
+                    {/* Der ProductCard ist jetzt selbst ein Link */}
+                    <ProductCard 
+                        id={item.productId}      // WICHTIG für den Link (/product/3)
+                        title={item.title}
+                        price={priceValue}       // Übergibt nur "850.00"
+                        category={item.condition}
+                        imageUrl={imageUrl}
+                    />
+                    
+                    {/* Entfernen Button (liegt über dem Link) */}
+                    {/* pointer-events-auto stellt sicher, dass man den Button klicken kann */}
+                    <button 
+                        className="absolute top-2 right-2 bg-white text-stone-400 hover:text-red-600 w-8 h-8 flex items-center justify-center rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                        title="Von Merkliste entfernen"
+                        onClick={(e) => {
+                            e.preventDefault(); // Verhindert Link-Navigation
+                            e.stopPropagation(); // Verhindert Bubbling
+                            alert(`Produkt ID ${item.productId} entfernen - Logik hier einfügen.`);
+                        }}
+                    >
+                        ✕
+                    </button>
+                </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="text-center py-20 bg-stone-50 rounded-3xl border-2 border-dashed border-stone-200">
+          <span className="text-6xl block mb-4">👀</span>
+          <h2 className="text-xl font-bold text-stone-900 mb-2">Deine Merkliste ist leer</h2>
+          <p className="text-stone-500 mb-8 max-w-md mx-auto">
+            Sieht so aus, als hättest du noch keine Favoriten gespeichert.
+          </p>
+          <Link 
+            to="/marketplace" 
+            className="inline-block bg-orange-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-orange-700 transition-colors shadow-lg shadow-orange-200"
+          >
+            Zum Marktplatz
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
