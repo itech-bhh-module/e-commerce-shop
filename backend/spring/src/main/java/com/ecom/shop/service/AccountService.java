@@ -6,6 +6,7 @@ import com.ecom.shop.entity.Account;
 import com.ecom.shop.entity.Address;
 import com.ecom.shop.repository.AccountRepo;
 import com.ecom.shop.repository.AddressRepo;
+import com.ecom.shop.type.Gender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;

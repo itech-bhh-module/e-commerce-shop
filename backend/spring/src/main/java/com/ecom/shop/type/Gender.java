@@ -1,9 +1,9 @@
 package com.ecom.shop.type;
 
 public enum Gender {
-    male,
-    female,
-    divers,
-    notanswered,
-    unknown
+    Male,
+    Female,
+    Divers,
+    Notanswered,
+    Unknown
 }
