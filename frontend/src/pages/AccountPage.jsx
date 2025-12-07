@@ -167,7 +167,7 @@ export default function AccountPage() {
             onClick={() => setActiveTab('profile')}
             className={`font-medium px-4 py-2 rounded-lg transition-all flex items-center gap-2 active:scale-95 ${
                 activeTab === 'profile' 
-                ? 'bg-stone-900 text-white shadow-md' 
+                ? 'bg-orange-600 text-white shadow-md' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900'
             }`}
         >
@@ -178,7 +178,7 @@ export default function AccountPage() {
             onClick={() => setActiveTab('offers')}
             className={`font-medium px-4 py-2 rounded-lg transition-all flex items-center gap-2 active:scale-95 ${
                 activeTab === 'offers' 
-                ? 'bg-stone-900 text-white shadow-md' 
+                ? 'bg-orange-600 text-white shadow-md' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900'
             }`}
         >
@@ -192,7 +192,7 @@ export default function AccountPage() {
             onClick={() => setActiveTab('watchlist')}
             className={`font-medium px-4 py-2 rounded-lg transition-all flex items-center gap-2 active:scale-95 ${
                 activeTab === 'watchlist' 
-                ? 'bg-stone-900 text-white shadow-md' 
+                ? 'bg-orange-600 text-white shadow-md' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900'
             }`}
         >
@@ -301,10 +301,10 @@ export default function AccountPage() {
                             disabled={!isEditing}
                             className={`w-full border rounded-lg px-4 py-2 transition-all outline-none ${isEditing ? 'bg-white border-stone-300 focus:ring-2 focus:ring-orange-500' : 'bg-stone-50 border-stone-200 text-stone-500 cursor-not-allowed'}`}
                         >
-                            <option value="female">Weiblich</option>
-                            <option value="male">Männlich</option>
-                            <option value="divers">Divers</option>
-                            <option value="notanswered">Nicht Angeben</option>
+                            <option value="Female">Weiblich</option>
+                            <option value="Male">Männlich</option>
+                            <option value="Divers">Divers</option>
+                            <option value="Notanswered">Nicht Angeben</option>
                         </select>
                     </div>
                     <div>
