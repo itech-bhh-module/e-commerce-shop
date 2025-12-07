@@ -8,6 +8,16 @@ export default function ProductDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const conditionMapping = {
+    NEW: "Neu",
+    LIKE_NEW: "Wie neu",
+    EXCELLENT: "Exzellent",
+    MAX_GOOD: "Sehr gut",
+    GOOD: "Gut",
+    USED: "Gebraucht",
+    DEFECT: "Defekt"
+  };
+
   useEffect(() => {
     const loadProduct = async () => {
       try {
@@ -62,6 +72,10 @@ export default function ProductDetailsPage() {
     ? product.images[0].imageUrl 
     : fallbackImage;
 
+  const displayCondition = product.condition 
+    ? (conditionMapping[product.condition] || product.condition) 
+    : 'Zustand unbekannt';
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-12 animate-in fade-in zoom-in duration-300">
       <Link to="/marketplace" className="text-stone-500 hover:text-orange-600 mb-8 inline-flex items-center gap-2 font-medium transition-colors group">
@@ -82,7 +96,7 @@ export default function ProductDetailsPage() {
         <div className="flex flex-col justify-center">
           <div className="mb-6">
             <span className="bg-orange-100 text-orange-800 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
-              {product.condition || 'Zustand unbekannt'}
+              {displayCondition}
             </span>
           </div>
           
@@ -107,14 +121,6 @@ export default function ProductDetailsPage() {
               Jetzt Kaufen
             </button>
           </div>
-
-          {/*
-          <div className="mt-8 text-sm text-stone-400 flex items-center gap-2">
-            <span>Verkauft von</span>
-            <span className="font-bold text-stone-600 bg-stone-100 px-3 py-1 rounded-lg">
-                {product.seller || product.username || "Unbekannt"}
-            </span>
-          </div> */}
         </div>
 
       </div>

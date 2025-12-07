@@ -8,6 +8,16 @@ export default function Watchlist() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const conditionMapping = {
+    NEW: "Neu",
+    LIKE_NEW: "Wie neu",
+    EXCELLENT: "Exzellent",
+    MAX_GOOD: "Sehr gut",
+    GOOD: "Gut",
+    USED: "Gebraucht",
+    DEFECT: "Defekt"
+  };
+   
   useEffect(() => {
     const loadWatchlist = async () => {
       try {
@@ -81,13 +91,15 @@ export default function Watchlist() {
                 ? item.images[0].imageUrl 
                 : null;
 
+            const displayCondition = conditionMapping[item.condition] || item.condition;
+
             return (
                 <div key={item.productId} className="relative group h-full">
                     <ProductCard 
                         id={item.productId} 
                         title={item.title}
                         price={priceValue}      
-                        category={item.condition}
+                        category={displayCondition}
                         imageUrl={imageUrl}
                     />
                     
