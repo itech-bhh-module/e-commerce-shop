@@ -36,7 +36,7 @@ public interface OrderRepo extends JpaRepository<Order, Integer> {
                     _ecom_quantities     := :ecomm_quantity
                 ) AS new_order_id;
             """, nativeQuery = true)
-            void createOrderEcomm(
+            void createOrderEcom(
                     @Param("account_buyer_id") int account_buyer_id,
                     @Param("payment_method") PaymentMethod payment_method,
                     @Param("ecommerce_product_id") Integer[] ecommerce_product_id,

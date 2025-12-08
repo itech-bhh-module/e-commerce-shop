@@ -24,6 +24,17 @@ public class OrderController {
                 new int[]{order.getQuantity()}
         );
     }
+    @PostMapping("/createOrder/ecom")
+    public void createOrderEcom(@RequestBody CreateOrderDto order) {
+        orderService.createOrderEcom(
+                order.getBuyerUsername(),
+                order.getPaymentMethod(),
+                new Integer[]{order.getEcommerceProductId()}, //prototype only one item in an order
+                new int[]{order.getQuantity()}
+        );
+    }
+
+
 
     /*
     cancel order by id

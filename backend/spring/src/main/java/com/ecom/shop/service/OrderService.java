@@ -16,4 +16,9 @@ public class OrderService {
         int accountId = accountRepo.findByUsername(accountUsername).getAccountId();
          orderRepo.createOrderSecHand(accountId,paymentMethod,secondhandProductId,secondhandQuantity);
     }
+
+    public void createOrderEcom(String accountUsername, PaymentMethod paymentMethod, Integer[] ecommerceProductId, int[] ecommerceQuantity) {
+        int accountId = accountRepo.findByUsername(accountUsername).getAccountId();
+         orderRepo.createOrderEcom(accountId,paymentMethod,ecommerceProductId,ecommerceQuantity);
+    }
 }
