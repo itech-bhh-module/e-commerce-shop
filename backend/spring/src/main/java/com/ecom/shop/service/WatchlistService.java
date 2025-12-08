@@ -27,4 +27,13 @@ public class WatchlistService {
         watchlistRepo.save(watchlistItem);
     }
 
+    public void removeFromWatchlist(String username, Integer productId){
+        int accountId = accountRepo.findByUsername(username).getAccountId();
+        Watchlist watchlistItem = watchlistRepo.getWatchlistByUsername(username).stream()
+                .filter(w -> w.getProduct().getProductId() == productId && w.getAccountId() == accountId)
+                .findFirst()
+                .orElseThrow();
+        watchlistRepo.delete(watchlistItem);
+    }
+
 }

@@ -19,4 +19,9 @@ public class WatchlistContoller {
     @PostMapping("/add/{username}/{productId}")
     public void addToWatchlist(@PathVariable String username, @PathVariable Integer productId){
         watchlistService.addToWatchlist(username, productId);}
+
+    @PostMapping("/remove/{username}/{productId}")
+    public void removeFromWatchlist(@PathVariable String username, @PathVariable Integer productId){
+        watchlistService.removeFromWatchlist(username, productId);
+    }
 }
