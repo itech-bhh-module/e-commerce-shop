@@ -61,26 +61,25 @@ export default function Watchlist() {
       );
   }
 
-  return (
-    <div className="max-w-7xl mx-auto px-6 py-12 min-h-[60vh]">
-      <div className="flex justify-between items-end mb-8 border-b border-stone-200 pb-4">
-        <div>
-          <h1 className="text-3xl font-black text-stone-900">Meine Merkliste</h1>
-          <p className="text-stone-500 mt-2">
-            {watchlistItems.length} Artikel gespeichert
-          </p>
-        </div>
-        <Link to="/marketplace" className="text-orange-600 font-bold hover:underline hidden sm:block">
-            Weiterstöbern →
-        </Link>
-      </div>
+return (
+    <div className="min-h-screen bg-white py-10">
+        <div className="w-full px-6 md:px-10">
+            
+            <div className="flex justify-between items-end mb-8 border-b border-stone-200 pb-4">
+                <div>
+                <h1 className="text-3xl font-black text-stone-900">Meine Merkliste</h1>
+                </div>
+                <Link to="/marketplace" className="text-orange-600 font-bold hover:underline hidden sm:block">
+                    Weiterstöbern →
+                </Link>
+            </div>
 
       {error ? (
         <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-center">
             {error}
         </div>
       ) : watchlistItems.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
           {watchlistItems.map((item) => {
 
             const priceValue = item.price 
@@ -133,6 +132,7 @@ export default function Watchlist() {
           </Link>
         </div>
       )}
+    </div>
     </div>
   );
 }

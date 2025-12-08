@@ -1,30 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { fetchProducts } from '../services/api';
 import ProductCard from '../components/ProductCard';
 import ProductSkeleton from '../components/ProductSkeleton';
 
-export default function Marketplace() {
+export default function Ecommerce() {
   const [allProducts, setAllProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
   const [searchParams] = useSearchParams();
 
   const categoryGroups = {
-    "Siebträgermaschinen": [
-        "Siebträgermaschinen (Espressomaschinen)", "Dualboiler", "Einkreiser", "Zweikreiser", "Professionelle Gastro-Maschinen"
+    "Bohnen & Röstungen": [
+        "Bohnen", "Single Origin", "Blends", "Espressobohnen"
     ],
-    "Kaffeemühlen": [
-        "Kaffeemühlen (Grinder)", "On-Demand-Mühlen", "Handmühlen", "Doser-Mühlen"
+    "Maschinen": [
+        "Siebträgermaschinen (Espressomaschinen)", "Filterkaffeemaschinen", "Mühlen"
     ],
-    "Filter & Co.": [
-        "Filterkaffeemaschinen", "Pour-Over-Maschinen", "AeroPress", "Chemex", "French Press", "Cold-Brew-Systeme"
+    "Barista Equipment": [
+        "Zubehör", "Werkzeuge & Barista-Zubehör", "Tamper & Matten", "Milchkannen (Pitcher)"
     ],
-    "Barista Zubehör": [
-        "Zubehör", "Werkzeuge & Barista-Zubehör", "Tamper & Matten", "WDT-Tools", "Präzisionswaagen", "Milchkannen (Pitcher)", "Knock Boxen (Ausschlagbehälter)", "Siebträger (Komplett)", "Tamping-Matten & Stationen"
-    ],
-    "Reinigung & Pflege": [ "Reinigungszubehör", "Kaffeefettlöser", "Entkalker" ],
-    "Tassen & Becher": [ "To-Go-Becher (wiederverwendbar)", "Espressotassen", "Cappuccino-Tassen" ]
+    "Lifestyle": [
+        "Tassen & Becher", "Reinigung & Pflege", "Merchandise"
+    ]
   };
 
   const [selectedGroup, setSelectedGroup] = useState(() => {
@@ -42,13 +40,19 @@ export default function Marketplace() {
   }, [searchParams]);
 
   const conditionMapping = {
-    NEW: "Neu", LIKE_NEW: "Wie neu", EXCELLENT: "Exzellent",
-    MAX_GOOD: "Sehr gut", GOOD: "Gut", USED: "Gebraucht", DEFECT: "Defekt"
+    NEW: "Neuware",
+    LIKE_NEW: "B-Ware",
+    EXCELLENT: "Refurbished",
+    MAX_GOOD: "Gut",
+    GOOD: "Gut",
+    USED: "Gebraucht",
+    DEFECT: "Defekt"
   };
 
   useEffect(() => {
     fetchProducts().then((data) => {
-      setAllProducts(data);
+
+      setAllProducts(data); 
       setIsLoading(false);
     });
   }, []);
@@ -64,32 +68,24 @@ export default function Marketplace() {
     <div className="min-h-screen bg-stone-50 py-6">
       
       <div className="w-full px-4">
-      
-        <div className="mx-auto mb-20">
-            <div className="bg-orange-600 rounded-2xl p-8 md:p-12 text-center text-white shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-                <div className="absolute bottom-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full translate-x-1/3 translate-y-1/3"></div>
+        
+        <div className="mx-auto mb-10">
+            <div className="bg-stone-900 rounded-2xl p-8 md:p-12 text-center text-white shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-48 h-48 bg-stone-800 opacity-50 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+                <div className="absolute bottom-0 right-0 w-64 h-64 bg-orange-500 opacity-10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"></div>
                 
                 <div className="relative z-10 flex flex-col items-center">
+                    <span className="text-orange-500 font-bold uppercase tracking-widest text-xs mb-2">Nicht die Bohne Originals</span>
                     <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tight">
-                        Marktplatz
+                        Originals Shop
                     </h1>
                     
-                    <div className="w-16 h-1 bg-white/30 rounded-full mb-6"></div>
+                    <div className="w-16 h-1 bg-stone-700 rounded-full mb-6"></div>
 
-                    <h2 className="text-lg md:text-xl font-bold text-orange-100 mb-2">
-                        Deine Maschine verstaubt?
-                    </h2>
-                    <p className="text-orange-100/80 text-sm md:text-base mb-8 max-w-lg mx-auto leading-relaxed">
-                        Mach Platz für Neues! Erstelle in wenigen Minuten ein Inserat und erreiche tausende Kaffeeliebhaber.
+                    <p className="text-stone-300 text-sm md:text-base max-w-lg mx-auto leading-relaxed">
+                        Handverlesene Bohnen, brandneues Equipment und exklusives Zubehör. 
+                        Direkt von uns für dein perfektes Home-Barista Erlebnis.
                     </p>
-                    
-                    <Link 
-                        to="/account" 
-                        className="inline-block bg-white text-orange-600 px-8 py-3 rounded-xl font-bold hover:bg-stone-100 transition-all shadow-lg transform hover:-translate-y-0.5"
-                    >
-                        Kostenlos verkaufen
-                    </Link>
                 </div>
             </div>
         </div>
@@ -98,19 +94,19 @@ export default function Marketplace() {
           
           <aside className="w-full md:w-56 flex-shrink-0">
               <div className="bg-white p-4 rounded-lg border border-stone-200 shadow-sm sticky top-4">
-                  <h2 className="font-bold text-lg mb-3 text-stone-800">Kategorien</h2>
+                  <h2 className="font-bold text-lg mb-3 text-stone-800">Sortiment</h2>
                   <div className="flex flex-col gap-1.5">
                       
                       <button
                           onClick={() => setSelectedGroup("Alle")}
                           className={`text-left px-3 py-1.5 rounded-md text-xs font-medium transition-all flex justify-between items-center ${
                               selectedGroup === "Alle" 
-                              ? 'bg-orange-700 text-white shadow-sm' 
+                              ? 'bg-stone-900 text-white shadow-sm' 
                               : 'bg-stone-50 text-stone-600 hover:bg-stone-100 hover:text-stone-900'
                           }`}
                       >
-                          <span>Alle Produkte</span>
-                          <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full">{allProducts.length}</span>
+                          <span>Alle Artikel</span>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${selectedGroup === "Alle" ? 'bg-stone-700 text-white' : 'bg-white text-stone-500 border border-stone-200'}`}>{allProducts.length}</span>
                       </button>
 
                       {Object.keys(categoryGroups).map((groupName) => {
@@ -121,12 +117,12 @@ export default function Marketplace() {
                                   onClick={() => setSelectedGroup(groupName)}
                                   className={`text-left px-3 py-1.5 rounded-md text-xs font-medium transition-all flex justify-between items-center ${
                                       selectedGroup === groupName 
-                                      ? 'bg-orange-600 text-white shadow-sm' 
+                                      ? 'bg-stone-900 text-white shadow-sm' 
                                       : 'bg-stone-50 text-stone-600 hover:bg-stone-100 hover:text-stone-900'
                                   }`}
                               >
                                   <span>{groupName}</span>
-                                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${selectedGroup === groupName ? 'bg-white/20 text-white' : 'bg-stone-200 text-stone-500'}`}>{count}</span>
+                                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${selectedGroup === groupName ? 'bg-stone-700 text-white' : 'bg-white text-stone-500 border border-stone-200'}`}>{count}</span>
                               </button>
                           );
                       })}
@@ -154,9 +150,9 @@ export default function Marketplace() {
                       })
                   ) : (
                       <div className="col-span-full py-20 text-center text-stone-500">
-                          <span className="text-4xl block mb-2">📦</span>
-                          <p className="text-sm">Keine Produkte gefunden.</p>
-                          <button onClick={() => setSelectedGroup("Alle")} className="text-orange-600 font-bold hover:underline mt-1 text-sm">Alle anzeigen</button>
+                          <span className="text-4xl block mb-2">🛍️</span>
+                          <p className="text-sm">Unser Lager wird gerade aufgefüllt.</p>
+                          <button onClick={() => setSelectedGroup("Alle")} className="text-stone-900 font-bold hover:underline mt-1 text-sm">Alle Artikel anzeigen</button>
                       </div>
                   )}
               </div>
