@@ -10,7 +10,6 @@ export default function Ecommerce() {
   
   const [searchParams] = useSearchParams();
 
-  // Kategorien spezifisch für den Shop
   const categoryGroups = {
     "Bohnen & Röstungen": [
         "Bohnen", "Single Origin", "Blends", "Espressobohnen"
@@ -40,7 +39,6 @@ export default function Ecommerce() {
       }
   }, [searchParams]);
 
-  // Mapping (Fokus auf Neuware)
   const conditionMapping = {
     NEW: "Neuware",
     LIKE_NEW: "B-Ware",
@@ -53,8 +51,7 @@ export default function Ecommerce() {
 
   useEffect(() => {
     fetchProducts().then((data) => {
-      // Optional: Hier könnte man filtern, falls die API "Gebraucht" und "Neu" mischt.
-      // const shopItems = data.filter(p => p.condition === 'NEW');
+
       setAllProducts(data); 
       setIsLoading(false);
     });
@@ -72,10 +69,8 @@ export default function Ecommerce() {
       
       <div className="w-full px-4">
         
-        {/* --- SHOP BANNER (Premium Look in Dunkelgrau) --- */}
         <div className="mx-auto mb-10">
             <div className="bg-stone-900 rounded-2xl p-8 md:p-12 text-center text-white shadow-xl relative overflow-hidden">
-                {/* Dekorative Elemente */}
                 <div className="absolute top-0 left-0 w-48 h-48 bg-stone-800 opacity-50 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
                 <div className="absolute bottom-0 right-0 w-64 h-64 bg-orange-500 opacity-10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"></div>
                 
@@ -94,11 +89,9 @@ export default function Ecommerce() {
                 </div>
             </div>
         </div>
-        {/* --- BANNER ENDE --- */}
         
         <div className="flex flex-col md:flex-row gap-6">
           
-          {/* SIDEBAR */}
           <aside className="w-full md:w-56 flex-shrink-0">
               <div className="bg-white p-4 rounded-lg border border-stone-200 shadow-sm sticky top-4">
                   <h2 className="font-bold text-lg mb-3 text-stone-800">Sortiment</h2>
@@ -137,7 +130,6 @@ export default function Ecommerce() {
               </div>
           </aside>
 
-          {/* PRODUKTE GRID (High Density) */}
           <div className="flex-1">
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
                   {isLoading ? (

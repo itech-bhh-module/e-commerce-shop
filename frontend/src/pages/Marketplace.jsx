@@ -65,23 +65,18 @@ export default function Marketplace() {
       
       <div className="w-full px-4">
       
-        {/* --- HEADER BANNER (INKL. ÜBERSCHRIFT) --- */}
         <div className="mx-auto mb-20">
             <div className="bg-orange-600 rounded-2xl p-8 md:p-12 text-center text-white shadow-xl relative overflow-hidden">
-                {/* Dekorative Kreise Hintergrund */}
                 <div className="absolute top-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
                 <div className="absolute bottom-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full translate-x-1/3 translate-y-1/3"></div>
                 
                 <div className="relative z-10 flex flex-col items-center">
-                    {/* HAUPTÜBERSCHRIFT */}
                     <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tight">
                         Marktplatz
                     </h1>
                     
-                    {/* Kleine Trennlinie */}
                     <div className="w-16 h-1 bg-white/30 rounded-full mb-6"></div>
 
-                    {/* CTA TEXT */}
                     <h2 className="text-lg md:text-xl font-bold text-orange-100 mb-2">
                         Deine Maschine verstaubt?
                     </h2>
@@ -89,7 +84,6 @@ export default function Marketplace() {
                         Mach Platz für Neues! Erstelle in wenigen Minuten ein Inserat und erreiche tausende Kaffeeliebhaber.
                     </p>
                     
-                    {/* BUTTON */}
                     <Link 
                         to="/account" 
                         className="inline-block bg-white text-orange-600 px-8 py-3 rounded-xl font-bold hover:bg-stone-100 transition-all shadow-lg transform hover:-translate-y-0.5"
@@ -99,11 +93,9 @@ export default function Marketplace() {
                 </div>
             </div>
         </div>
-        {/* --- BANNER ENDE --- */}
         
         <div className="flex flex-col md:flex-row gap-6">
           
-          {/* SIDEBAR */}
           <aside className="w-full md:w-56 flex-shrink-0">
               <div className="bg-white p-4 rounded-lg border border-stone-200 shadow-sm sticky top-4">
                   <h2 className="font-bold text-lg mb-3 text-stone-800">Kategorien</h2>
@@ -142,7 +134,6 @@ export default function Marketplace() {
               </div>
           </aside>
 
-          {/* PRODUKTE GRID */}
           <div className="flex-1">
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
                   {isLoading ? (

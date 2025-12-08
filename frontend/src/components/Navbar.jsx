@@ -43,7 +43,6 @@ export default function Navbar() {
                 Marktplatz
              </Link>
 
-             {/* NEUER SHOP LINK - Im gleichen Stil */}
              <Link to="/shop" className="text-lg hover:text-orange-600 text-orange-700 font-medium flex items-center gap-1">
                 Shop <span className="bg-orange-100 text-orange-800 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">Neu</span>
              </Link>
@@ -54,8 +53,7 @@ export default function Navbar() {
                 </Link>
              )}
           </div>
-
-          {/* RECHTE SEITE (ACTIONS) */}
+          
           <div className="flex gap-4 items-center">
 
             {username ? (
