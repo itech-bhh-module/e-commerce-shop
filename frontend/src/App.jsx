@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import AccountPage from './pages/AccountPage';
 import ProductDetailsPage from './pages/ProductDetailsPage';
 import Watchlist from './pages/Watchlist';
+import Ecommerce from './pages/Ecommerce';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/account" element={<AccountPage />} />
           <Route path="/watchlist" element={<Watchlist />} />
           <Route path="/product/:id" element={<ProductDetailsPage />} />
+          <Route path="/shop" element={<Ecommerce />} />
         </Routes>
       </main>
 

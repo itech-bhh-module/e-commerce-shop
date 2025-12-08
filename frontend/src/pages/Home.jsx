@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export default function Home() {
   return (
-    <div className="w-full pb-20">
+    <div className="w-full px-6 md:px-10 py-10 min-h-screen bg-stone-50">
       
 
       <div className="relative bg-stone-900 text-white rounded-3xl mt-6 mx-4 md:mx-10 overflow-hidden shadow-2xl">
@@ -29,7 +29,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-24">
+      <div className="mx-auto px-6 py-24">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
           <div className="p-6">
             <div className="bg-orange-100 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl">

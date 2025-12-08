@@ -28,25 +28,35 @@ export default function Navbar() {
       <nav className="bg-white border-b border-stone-200 sticky top-0 z-40 w-full">
         <div className="w-full px-6 md:px-10 h-16 flex items-center justify-between">
           
+          {/* LOGO */}
           <Link to="/" className="text-xl font-black text-orange-700 hover:text-orange-600 flex items-center gap-2">
              <span className="text-2xl">☕</span> Nicht Die Bohne
           </Link>
 
-          <div className="hidden md:flex gap-7">
-             <Link to="/" className="text-lg hover:text-orange-600 text-orange-700 font-medium">Startseite</Link>
-             <Link to="/marketplace" className="text-lg hover:text-orange-600 text-orange-700 font-medium">Marktplatz</Link>
+          {/* NAVIGATION (MITTE) */}
+          <div className="hidden md:flex gap-7 items-center">
+             <Link to="/" className="text-lg hover:text-orange-600 text-orange-700 font-medium">
+                Startseite
+             </Link>
+             
+             <Link to="/marketplace" className="text-lg hover:text-orange-600 text-orange-700 font-medium">
+                Marktplatz
+             </Link>
+
+             {/* NEUER SHOP LINK - Im gleichen Stil */}
+             <Link to="/shop" className="text-lg hover:text-orange-600 text-orange-700 font-medium flex items-center gap-1">
+                Shop <span className="bg-orange-100 text-orange-800 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">Neu</span>
+             </Link>
+
              {username && (
-                <Link to="/watchlist" className="text-lg hover:text-orange-600 text-orange-700 font-medium flex items-center gap-1">
+                <Link to="/watchlist" className="text-lg hover:text-orange-600 text-orange-700 font-medium">
                     Merkliste
                 </Link>
              )}
           </div>
 
+          {/* RECHTE SEITE (ACTIONS) */}
           <div className="flex gap-4 items-center">
-            
-            <button className="bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2 active:scale-95">
-                Verkaufen
-            </button>
 
             {username ? (
               <div className="relative">
@@ -78,7 +88,7 @@ export default function Navbar() {
                     
                     <button 
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 bg-orange-600 text-white hover:bg-orange-50 hover:text-orange-700  font-medium"
+                      className="w-full text-left px-4 py-2 bg-orange-600 text-white hover:bg-orange-50 hover:text-orange-700 font-medium"
                     >
                       Abmelden
                     </button>
