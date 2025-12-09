@@ -40,4 +40,4 @@ target/
 ../*.sql
 # Postgres data directories created by docker-compose or local setups
 ../pg_data
-../spring/src/resources/application.yaml
+src/resources/application.yaml
