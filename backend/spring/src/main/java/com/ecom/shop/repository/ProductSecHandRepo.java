@@ -33,8 +33,8 @@ public interface ProductSecHandRepo extends JpaRepository<ProductSecondHand, Int
                 _price             := :price,
                 _amount            := :amount,
                 _condition         := :condition, 
-                _image_urls        := NULL,
-                _image_alts        := NULL,
+                _image_urls        := :images,
+                _image_alts        := :alts,
                 _main_index        := :mainIndex
             )
         """, nativeQuery = true)
@@ -46,6 +46,8 @@ public interface ProductSecHandRepo extends JpaRepository<ProductSecondHand, Int
             @Param("price") int price,
             @Param("amount") int amount,
             @Param("condition") Condition condition,
+            @Param("images") String[] images,
+            @Param("alts") String[] alts,
             @Param("mainIndex") int mainIndex
     );
 
