@@ -8,7 +8,7 @@ RUN useradd -ms /bin/bash appuser
 USER appuser
 
 # JAR kopieren
-COPY ../../../backend/spring/target/*.jar app.jar
+COPY target/*.jar app.jar
 
 # Optionale Runtime-Parameter
 ENV JVM_XMS=256m \
