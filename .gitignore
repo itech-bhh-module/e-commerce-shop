@@ -70,4 +70,4 @@ package-lock.json
 yarn-error.log
 
 # application yaml nicht mehr im repo, damit dev und prod nicht vertauscht wird
-./backend/src/main/resources/application.yaml
+/backend/src/main/resources/application.yaml
