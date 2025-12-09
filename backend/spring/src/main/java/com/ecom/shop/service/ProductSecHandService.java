@@ -54,6 +54,8 @@ public class ProductSecHandService {
                 offer.getPrice(),
                 offer.getAmount(),
                 offer.getCondition(),
+                offer.getImageUrls(),
+                offer.getAlts(),
                 offer.getMainIndex()
         );
     }
